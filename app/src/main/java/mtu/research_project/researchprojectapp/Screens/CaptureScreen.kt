@@ -2,6 +2,7 @@ package mtu.research_project.researchprojectapp.Screens
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -81,6 +82,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                             .padding(start = 250.dp),
                         onClick = {
                             appViewModel.createCategory(Category("sample name", null), appViewModel.categories)
+                            Log.d("LIST OF CATEGORIES", "${appViewModel.categories}")
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 
