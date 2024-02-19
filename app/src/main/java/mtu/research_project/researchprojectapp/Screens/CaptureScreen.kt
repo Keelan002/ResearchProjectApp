@@ -143,7 +143,9 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navHController.navigate(Screens.MainCameraScreen.route)
+                    if (appViewModel.selectedCategory.value != null) {
+                        navHController.navigate(Screens.MainCameraScreen.route)
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
