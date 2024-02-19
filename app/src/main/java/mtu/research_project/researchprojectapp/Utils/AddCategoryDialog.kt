@@ -22,10 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import mtu.research_project.researchprojectapp.AppModel.Category
 
 
 @Composable
-fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: () -> Unit) {
+fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) {
     var categoryName by rememberSaveable { mutableStateOf("") }
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -54,7 +55,12 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: () -> Unit) {
                 horizontalArrangement = Arrangement.End
             ){
                 Button(
-                    onClick = onAddCategory,
+                    onClick = {
+                              if (categoryName.isNotBlank()){
+                                  val newCategory = Category(categoryName)
+                                  onAddCategory(newCategory)
+                              }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF101430),
                         contentColor = Color(0xFF00B6CB)

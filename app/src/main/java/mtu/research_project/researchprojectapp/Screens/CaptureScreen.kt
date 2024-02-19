@@ -2,7 +2,6 @@ package mtu.research_project.researchprojectapp.Screens
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -45,10 +44,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import mtu.research_project.researchprojectapp.AppModel.Categories
-import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
-import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
@@ -59,6 +56,8 @@ fun CaptureScreen(navController: NavHostController, appViewModel: AppViewModel) 
     ) {
         CaptureScreenContent(navController, appViewModel)
     }
+
+    appViewModel.RunAddCategoryDialog()
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -82,7 +81,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                         modifier = Modifier
                             .padding(start = 250.dp),
                         onClick = {
-
+                                  appViewModel.showAddCategoryDialog()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 

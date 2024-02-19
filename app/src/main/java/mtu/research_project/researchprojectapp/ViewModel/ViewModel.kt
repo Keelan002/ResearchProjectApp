@@ -2,6 +2,7 @@ package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,9 +83,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if (uiState.showAddCategoryDialog){
             AddCategoryDialog(
                 onDismiss = { hideAddCategoryDialog() },
-                onAddCategory = {  }
+                onAddCategory = { category ->
+                    createCategory(category, categories)
+                    hideAddCategoryDialog()
+                    Log.d("LIST OF CATEGORIES", "$categories")
+                }
             )
         }
     }
-
 }
