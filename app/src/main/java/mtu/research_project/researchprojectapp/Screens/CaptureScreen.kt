@@ -30,8 +30,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,6 +71,9 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
+
+    val selectedCategory by appViewModel.selectedCategory.observeAsState()
+    val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
 
     Scaffold(
         topBar = {
@@ -145,7 +150,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                     .padding(start = 40.dp)
                     .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
                 contentColor = Color.Black,
-                containerColor = secondaryColor
+                containerColor = if (updatedSelectedCategory.value == null) Color.Gray else secondaryColor
             ) {
                 Text("Capture photo")
             }

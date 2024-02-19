@@ -71,11 +71,13 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 
     // Camera and Lifecycle libraries
     implementation("androidx.camera:camera-core:1.2.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.7.2")
+
 
     // Material Icons Extended
     implementation ("androidx.compose.material:material-icons-extended")

@@ -37,7 +37,7 @@ class CameraViewModel : ViewModel() {
     }
 }
 
-data class StudyUiState(
+data class UiState(
     val showAddCategoryDialog: Boolean = false,
 )
 
@@ -49,7 +49,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
-    var uiState by mutableStateOf(StudyUiState())
+    var uiState by mutableStateOf(UiState())
         private set
 
     fun setSelectedCategory(category: Category?) {
