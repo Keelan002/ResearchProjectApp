@@ -49,8 +49,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
-    //val categories = Categories(categories = ArrayList())
-
     var uiState by mutableStateOf(StudyUiState())
         private set
 
@@ -58,16 +56,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _selectedCategory.value = category
     }
 
-    fun createCategory(category: Category) {
-        //categories.categories?.add(category)
-
+    private fun createCategory(category: Category) {
         _categories.value = _categories.value + category
     }
 
-    // Function to add a photo to a specific category
-    fun addPhotoToCategory(categoryName: String, bitmap: Bitmap, categories: Categories) {
-        val category = categories.categories?.find { it.name == categoryName }
-        category?.photos?.add(bitmap)
+    fun addPhotoToCategory(bitmap: Bitmap) {
+        val category = selectedCategory.value
+        if (category != null) {
+            category.photos?.add(bitmap)
+        }
     }
 
     // Function to retrieve photos from a specific category
