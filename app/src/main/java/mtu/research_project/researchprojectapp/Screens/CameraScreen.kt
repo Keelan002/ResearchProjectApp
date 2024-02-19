@@ -145,7 +145,7 @@ private fun capturePhoto(
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
-            appViewModel.addPhotoToCategory(categoryName, correctedBitmap)
+            //appViewModel.addPhotoToCategory(categoryName, correctedBitmap)
             image.close()
 
         }

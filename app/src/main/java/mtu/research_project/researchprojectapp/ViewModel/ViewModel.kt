@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,7 +46,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
-    val categories = Categories(categories = ArrayList())
+    private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
+    val categories: List<Category> get() = _categories.value
+
+    //val categories = Categories(categories = ArrayList())
 
     var uiState by mutableStateOf(StudyUiState())
         private set
@@ -54,18 +58,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _selectedCategory.value = category
     }
 
-    fun createCategory(category: Category, categories: Categories) {
-        categories.categories?.add(category)
+    fun createCategory(category: Category) {
+        //categories.categories?.add(category)
+
+        _categories.value = _categories.value + category
     }
 
     // Function to add a photo to a specific category
-    fun addPhotoToCategory(categoryName: String, bitmap: Bitmap) {
+    fun addPhotoToCategory(categoryName: String, bitmap: Bitmap, categories: Categories) {
         val category = categories.categories?.find { it.name == categoryName }
         category?.photos?.add(bitmap)
     }
 
     // Function to retrieve photos from a specific category
-    fun getPhotosFromCategory(categoryName: String): List<Bitmap> {
+    fun getPhotosFromCategory(categoryName: String, categories: Categories): List<Bitmap> {
         val category = categories.categories?.find { it.name == categoryName }
         return category?.photos ?: emptyList()
     }
@@ -84,9 +90,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             AddCategoryDialog(
                 onDismiss = { hideAddCategoryDialog() },
                 onAddCategory = { category ->
-                    createCategory(category, categories)
+                    createCategory(category)
                     hideAddCategoryDialog()
-                    Log.d("LIST OF CATEGORIES", "$categories")
+                    Log.d("LISTED CATEGORIES", "$categories")
                 }
             )
         }

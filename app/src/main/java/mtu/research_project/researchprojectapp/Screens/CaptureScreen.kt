@@ -128,6 +128,10 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+
+
+                DisplayCategories(appViewModel)
+
             }
         },
         floatingActionButton = {
@@ -219,12 +223,12 @@ fun CustomButton(
 }
 
 @Composable
-fun DisplayCategories(categories: Categories, onClick: () -> Unit) {
-    LazyColumn {
-        items(categories.categories ?: emptyList()) { category ->
+fun DisplayCategories(appViewModel: AppViewModel){
+    LazyColumn{
+        items(appViewModel.categories){category ->
             CustomButton(
                 text = category.name,
-                onClick = onClick
+                onClick = {  }
             )
         }
     }
