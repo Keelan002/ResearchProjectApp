@@ -48,6 +48,7 @@ import mtu.research_project.researchprojectapp.AppModel.Categories
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
@@ -81,8 +82,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                         modifier = Modifier
                             .padding(start = 250.dp),
                         onClick = {
-                            appViewModel.createCategory(Category("sample name", null), appViewModel.categories)
-                            Log.d("LIST OF CATEGORIES", "${appViewModel.categories}")
+
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 

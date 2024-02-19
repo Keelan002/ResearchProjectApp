@@ -2,6 +2,10 @@ package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
 import android.graphics.Bitmap
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Categories
 import mtu.research_project.researchprojectapp.AppModel.Category
+import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
@@ -30,15 +35,19 @@ class CameraViewModel : ViewModel() {
     }
 }
 
+data class StudyUiState(
+    val showAddCategoryDialog: Boolean = false,
+)
+
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
-
-    //var categories by mutableStateOf<List<Category>>(emptyList())
-
     val categories = Categories(categories = ArrayList())
+
+    var uiState by mutableStateOf(StudyUiState())
+        private set
 
     fun setSelectedCategory(category: Category?) {
         _selectedCategory.value = category
@@ -58,6 +67,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun getPhotosFromCategory(categoryName: String): List<Bitmap> {
         val category = categories.categories?.find { it.name == categoryName }
         return category?.photos ?: emptyList()
+    }
+
+    fun showAddCategoryDialog() {
+        uiState = uiState.copy(showAddCategoryDialog  = true)
+    }
+
+    fun hideAddCategoryDialog() {
+        uiState = uiState.copy(showAddCategoryDialog = false)
+    }
+
+    @Composable
+    fun RunAddCategoryDialog(){
+        if (uiState.showAddCategoryDialog){
+            AddCategoryDialog(
+                onDismiss = { hideAddCategoryDialog() },
+                onAddCategory = {  }
+            )
+        }
     }
 
 }
