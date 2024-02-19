@@ -2,7 +2,7 @@ package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
 import android.graphics.Bitmap
-import androidx.camera.core.CameraState
+import mtu.research_project.researchprojectapp.CameraX.CameraState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +16,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class CameraViewModel : ViewModel() {
 
-   /* private val _state = MutableStateFlow(CameraState())
+    private val _state = MutableStateFlow(CameraState())
     val state = _state.asStateFlow()
 
     fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
@@ -27,7 +27,7 @@ class CameraViewModel : ViewModel() {
     override fun onCleared() {
         _state.value.capturedImage?.recycle()
         super.onCleared()
-    }*/
+    }
 }
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
