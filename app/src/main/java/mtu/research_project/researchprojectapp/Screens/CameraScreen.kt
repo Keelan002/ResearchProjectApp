@@ -39,7 +39,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mtu.research_project.researchprojectapp.Utils.rotateBitmap
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
@@ -88,11 +91,20 @@ private fun CameraContent(
                         appViewModel = appViewModel,
                         cameraViewModel = cameraViewModel
                     )
+                },
+                icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }
+            )
+            ExtendedFloatingActionButton(
+                text = { Text(text = "Back") },
+                onClick = {
+                    capturePhoto(
+                        context = context,
+                        cameraController = cameraController,
+                        appViewModel = appViewModel,
+                        cameraViewModel = cameraViewModel
+                    )
 
-
-
-
-                    //navController.navigate(Screens.GalleryScreen.route)
+                    navController.navigate(Screens.GalleryScreen.route)
 
                 },
                 icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }

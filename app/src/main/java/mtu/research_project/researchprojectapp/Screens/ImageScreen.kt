@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -125,20 +129,28 @@ fun SearchBar(navController: NavHostController, appViewModel: AppViewModel) {
 
 @Composable
 fun DisplayImages(appViewModel: AppViewModel) {
-    val images = appViewModel.selectedCategory.value?.photos
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize()
     ) {
-        if (images != null) {
-            items(images.size) { image ->
-                ImageWithTitle(imageResource = image, title = appViewModel.selectedCategory.value!!.name)
+        items(appViewModel.selectedCategory.value?.photos?.size ?: 0) { index ->
+            val photo = appViewModel.selectedCategory.value?.photos?.get(index)
+            photo?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(4.dp),
+                )
             }
         }
     }
 }
 
+/*
 @Composable
 fun ImageWithTitle(imageResource: Int, title: String) {
 
@@ -162,7 +174,7 @@ fun ImageWithTitle(imageResource: Int, title: String) {
                 .clip(shape = RoundedCornerShape(8.dp))
         ) {
             Image(
-                painter = painterResource(imageResource),
+                painter = painterResource(id = imageResource),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -170,4 +182,4 @@ fun ImageWithTitle(imageResource: Int, title: String) {
             )
         }
     }
-}
+}*/

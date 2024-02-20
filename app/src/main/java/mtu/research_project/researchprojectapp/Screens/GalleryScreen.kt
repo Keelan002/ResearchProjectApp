@@ -1,6 +1,7 @@
 package mtu.research_project.researchprojectapp.Screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
+import java.util.Optional
 
 @Composable
 fun GalleryScreen(navHController: NavHostController, appViewModel: AppViewModel){
@@ -81,38 +84,6 @@ fun GalleryScreenContent(navHController: NavHostController, appViewModel: AppVie
                         .padding(start = 20.dp, end = 20.dp, top = 30.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    // First Box
-                    /*Box(
-                        modifier = Modifier
-                            .clickable {
-                                navHController.navigate(Screens.ImageScreen.route)
-                            }
-                            .weight(1f)
-                            .height(100.dp)
-                            .background(secondaryColor)
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Drink", color = Color.White)
-                    }
-
-                    Spacer(modifier = Modifier.width(30.dp))
-
-                    // Second Box
-                    Box(
-                        modifier = Modifier
-                            .clickable {
-                                navHController.navigate(Screens.ImageScreen.route)
-                            }
-                            .weight(1f)
-                            .height(100.dp)
-                            .background(secondaryColor)
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Food", color = Color.White)
-                    }*/
-
                     DisplayCategoriesInGallery(
                         appViewModel, navHController
                     )
@@ -127,13 +98,16 @@ fun GalleryScreenContent(navHController: NavHostController, appViewModel: AppVie
 fun CustomBox(
     text: String,
     navHController: NavHostController,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
+    category: Category
 ) {
 
     Box(
         modifier = Modifier
             .clickable {
-                navHController.navigate(Screens.ImageScreen.route)
+                appViewModel.setSelectedCategory(category)
+                Log.d("SELECTED CATEGORY IN GALLERY", "${appViewModel.selectedCategory.value}")
+                //navHController.navigate(Screens.ImageScreen.route)
             }
             .height(100.dp)
             .background(secondaryColor)
@@ -148,11 +122,19 @@ fun CustomBox(
 fun DisplayCategoriesInGallery(appViewModel: AppViewModel, navHController: NavHostController){
     LazyColumn{
         items(appViewModel.categories){category ->
-            CustomBox(
-                text = category.name,
-                appViewModel = appViewModel,
-                navHController = navHController
-            )
+            appViewModel.selectedCategory.value?.let {
+                CustomButton(
+                    text = category.name,
+                    onClick = {
+                        appViewModel.setSelectedCategory(category)
+                        Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
+                        navHController.navigate(Screens.ImageScreen.route)
+                    }
+                )
+            }
         }
     }
 }
+
+
+
