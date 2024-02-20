@@ -238,6 +238,7 @@ fun DisplayCategories(appViewModel: AppViewModel){
                 text = category.name,
                 onClick = {
                     appViewModel.setSelectedCategory(category)
+                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                 }
             )
         }

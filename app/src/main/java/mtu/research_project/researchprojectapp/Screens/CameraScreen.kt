@@ -86,13 +86,14 @@ private fun CameraContent(
                         context = context,
                         cameraController = cameraController,
                         appViewModel = appViewModel,
-                        categoryName = appViewModel.selectedCategory.value?.name ?: "",
                         cameraViewModel = cameraViewModel
                     )
 
-                    Log.d("LAST CAPTURED PHOTO", "$lastCapturedPhoto")
 
-                    navController.navigate(Screens.GalleryScreen.route)
+
+
+                    //navController.navigate(Screens.GalleryScreen.route)
+
                 },
                 icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }
             )
@@ -120,7 +121,8 @@ private fun CameraContent(
             if (lastCapturedPhoto != null) {
                 LastPhotoPreview(
                     modifier = Modifier.align(alignment = Alignment.BottomStart),
-                    lastCapturedPhoto = lastCapturedPhoto
+                    lastCapturedPhoto = lastCapturedPhoto,
+                    appViewModel = appViewModel
                 )
             }
         }
@@ -132,8 +134,7 @@ private fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController,
     appViewModel: AppViewModel,
-    categoryName: String,
-    cameraViewModel: CameraViewModel
+    cameraViewModel: CameraViewModel,
 ) {
 
     val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
@@ -145,7 +146,6 @@ private fun capturePhoto(
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
-            appViewModel.addPhotoToCategory(correctedBitmap)
             image.close()
 
         }
@@ -159,10 +159,12 @@ private fun capturePhoto(
 @Composable
 private fun LastPhotoPreview(
     modifier: Modifier = Modifier,
-    lastCapturedPhoto: Bitmap
+    lastCapturedPhoto: Bitmap,
+    appViewModel: AppViewModel
 ) {
 
     val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
+    appViewModel.addPhotoToCategory(capturedPhoto)
 
     Card(
         modifier = modifier

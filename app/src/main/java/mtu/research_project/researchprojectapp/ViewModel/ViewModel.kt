@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -60,7 +61,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _categories.value = _categories.value + category
     }
 
-    fun addPhotoToCategory(bitmap: Bitmap) {
+    fun addPhotoToCategory(bitmap: ImageBitmap) {
         val category = selectedCategory.value
         if (category != null) {
             category.photos?.add(bitmap)
@@ -68,10 +69,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Function to retrieve photos from a specific category
-    fun getPhotosFromCategory(categoryName: String, categories: Categories): List<Bitmap> {
+    /*fun getPhotosFromCategory(categoryName: String, categories: Categories): List<Bitmap> {
         val category = categories.categories?.find { it.name == categoryName }
         return category?.photos ?: emptyList()
-    }
+    }*/
 
     fun showAddCategoryDialog() {
         uiState = uiState.copy(showAddCategoryDialog  = true)
