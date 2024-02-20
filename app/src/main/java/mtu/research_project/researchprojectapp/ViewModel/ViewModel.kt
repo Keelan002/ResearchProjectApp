@@ -69,10 +69,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Function to retrieve photos from a specific category
-    /*fun getPhotosFromCategory(categoryName: String, categories: Categories): List<Bitmap> {
+    fun getPhotosFromCategory(categoryName: String, categories: Categories): List<ImageBitmap> {
         val category = categories.categories?.find { it.name == categoryName }
         return category?.photos ?: emptyList()
-    }*/
+    }
 
     fun showAddCategoryDialog() {
         uiState = uiState.copy(showAddCategoryDialog  = true)
