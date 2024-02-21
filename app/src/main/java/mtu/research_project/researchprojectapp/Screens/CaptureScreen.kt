@@ -22,6 +22,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +52,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import mtu.research_project.researchprojectapp.AppModel.SubCategory
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -76,6 +78,8 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
+
+
 
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
@@ -142,6 +146,12 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
 
 
                 DisplayCategories(appViewModel)
+
+                /*if (appViewModel.isExpanded){
+                    DisplaySubCategories(appViewModel)
+                }*/
+
+                //DisplayCategoriesAndSubCategories(appViewModel)
 
             }
         },
@@ -224,7 +234,7 @@ fun CustomButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
 ) {
     Button(
         onClick = onClick,
@@ -249,6 +259,13 @@ fun CustomButton(
                 .clickable { appViewModel.showAddSubCategoryDialog() }
         )
 
+        Icon(
+            imageVector = Icons.Default.ArrowDownward,
+            contentDescription = "Expand category",
+            modifier = Modifier
+                .clickable { appViewModel.setIsExpanded(true) }
+        )
+
     }
 }
 
@@ -265,6 +282,66 @@ fun DisplayCategories(appViewModel: AppViewModel){
                 appViewModel = appViewModel
             )
         }
+
+        if (appViewModel.isExpanded)
+        items(appViewModel.subCategories){subCategory ->
+            CustomButton(
+                text = subCategory.name,
+                onClick = { /*TODO*/ },
+                appViewModel = appViewModel
+            )
+        }
     }
 }
+
+@Composable
+fun DisplaySubCategories(appViewModel: AppViewModel){
+    LazyColumn{
+        items(appViewModel.subCategories){subCategory ->
+            CustomButton(
+                text = subCategory.name,
+                onClick = {
+
+                },
+                appViewModel = appViewModel
+            )
+
+        }
+
+        items(appViewModel.subCategories){}
+    }
+}
+
+/*@Composable
+fun DisplayCategoriesAndSubCategories(appViewModel: AppViewModel) {
+    LazyColumn {
+        items(appViewModel.categories) { category ->
+            CustomButton(
+                text = category.name,
+                onClick = {
+                    appViewModel.setSelectedCategory(category)
+                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
+                    appViewModel.isExpanded = !appViewModel.isExpanded
+                },
+                appViewModel = appViewModel
+            )
+
+            if (appViewModel.isExpanded && appViewModel.selectedCategory.value == category) {
+                val subCategories = appViewModel.selectedCategory.value?.subCategories?.toList() ?: emptyList()
+                LazyColumn{
+                    items(subCategories) { subCategory ->
+                        CustomButton(
+                            text = subCategory.name,
+                            onClick = {
+
+                            },
+                            appViewModel = appViewModel
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+}*/
 

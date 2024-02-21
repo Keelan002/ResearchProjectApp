@@ -61,7 +61,7 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (SubCategory) -> 
                     onClick = {
                         if (subCategoryName.isNotBlank()){
                             val newSubCategory = SubCategory(subCategoryName)
-                                onAddCategory(newSubCategory)
+                            onAddCategory(newSubCategory)
                         }
                     },
                     colors = ButtonDefaults.buttonColors(

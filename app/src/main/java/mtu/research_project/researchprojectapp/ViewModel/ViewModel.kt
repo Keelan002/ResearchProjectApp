@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
@@ -49,6 +50,13 @@ data class UiState(
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
+    var isExpanded by mutableStateOf(false)
+        private set
+
+    fun setIsExpanded(value: Boolean) {
+        isExpanded = value
+    }
+
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
@@ -56,7 +64,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val categories: List<Category> get() = _categories.value
 
     private val _subCategories: MutableState<List<SubCategory>> = mutableStateOf(emptyList())
-    val subcategories: List<SubCategory> get() = _subCategories.value
+    val subCategories: List<SubCategory> get() = _subCategories.value
 
     var uiState by mutableStateOf(UiState())
         private set
