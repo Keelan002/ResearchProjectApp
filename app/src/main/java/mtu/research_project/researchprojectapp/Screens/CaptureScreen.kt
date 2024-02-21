@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +20,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -46,7 +51,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import mtu.research_project.researchprojectapp.AppModel.Categories
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -61,6 +65,7 @@ fun CaptureScreen(navController: NavHostController, appViewModel: AppViewModel) 
     }
 
     appViewModel.RunAddCategoryDialog()
+    appViewModel.RunAddSubCategoryDialog(appViewModel)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -167,6 +172,7 @@ fun PrimaryTabRowDemo(selectedTabIndex: Int, onTabSelected: (Int) -> Unit, navCo
         "Gallery",
     )
 
+
     TabRow(
         selectedTabIndex = selectedTabIndex,
         indicator = { tabPositions ->
@@ -218,6 +224,7 @@ fun CustomButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    appViewModel: AppViewModel
 ) {
     Button(
         onClick = onClick,
@@ -226,7 +233,22 @@ fun CustomButton(
             .fillMaxWidth()
             .padding(start = 30.dp, end = 30.dp)
     ) {
-        Text(text = text)
+
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 32.dp)
+        )
+
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Camera capture icon",
+            modifier = Modifier
+                .clickable { appViewModel.showAddSubCategoryDialog() }
+        )
+
     }
 }
 
@@ -239,7 +261,8 @@ fun DisplayCategories(appViewModel: AppViewModel){
                 onClick = {
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                }
+                },
+                appViewModel = appViewModel
             )
         }
     }

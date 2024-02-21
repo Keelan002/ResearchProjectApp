@@ -104,7 +104,7 @@ private fun CameraContent(
                         cameraViewModel = cameraViewModel
                     )
 
-                    navController.navigate(Screens.GalleryScreen.route)
+                    navController.navigate(Screens.CaptureScreen.route)
 
                 },
                 icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }

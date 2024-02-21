@@ -9,5 +9,11 @@ data class Categories(
 
 data class Category(
     val name: String,
+    val photos: MutableList<ImageBitmap>? = mutableListOf(),
+    val subCategories: MutableList<SubCategory>? = mutableListOf()
+)
+
+data class SubCategory(
+    val name: String,
     val photos: MutableList<ImageBitmap>? = mutableListOf()
 )

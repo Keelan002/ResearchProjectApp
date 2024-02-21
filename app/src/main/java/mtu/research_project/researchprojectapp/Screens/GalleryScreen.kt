@@ -129,7 +129,8 @@ fun DisplayCategoriesInGallery(appViewModel: AppViewModel, navHController: NavHo
                         appViewModel.setSelectedCategory(category)
                         Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                         navHController.navigate(Screens.ImageScreen.route)
-                    }
+                    },
+                    appViewModel = appViewModel
                 )
             }
         }
