@@ -60,6 +60,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
+    private val _selectedSubCategory = MutableLiveData<SubCategory?>()
+    var selectedSubCategory: LiveData<SubCategory?> = _selectedSubCategory
+
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
@@ -71,6 +74,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setSelectedCategory(category: Category?) {
         _selectedCategory.value = category
+    }
+
+    fun setSelectedSubCategory(subCategory: SubCategory){
+        _selectedSubCategory.value = subCategory
     }
 
     private fun createSubCategory(subCategory: SubCategory){
