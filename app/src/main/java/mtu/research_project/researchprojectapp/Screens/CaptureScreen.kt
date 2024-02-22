@@ -92,20 +92,12 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                         text = "App Name",
 
                         )
-                    Button(
-                        modifier = Modifier
-                            .padding(start = 250.dp),
-                        onClick = {
-                                  appViewModel.showAddCategoryDialog()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-
-                        ) {
-                        Text(
-                            text = "add category + ",
-                            color = Color.Black
-                        )
+                    if(appViewModel.selectedCategory.value == null){
+                        AddCategoryTopAppBarBtn(appViewModel)
+                    }else{
+                        AddSubCategoryTopAppBarBtn(appViewModel)
                     }
+
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = secondaryColor),
             )
@@ -145,12 +137,12 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                 )
 
 
-                DisplayCategories(appViewModel)
-
-                /*if (appViewModel.isExpanded){
+                if (appViewModel.selectedCategory.value == null){
+                    DisplayCategories(appViewModel)
+                }
+                else{
                     DisplaySubCategories(appViewModel)
-                }*/
-
+                }
                 //DisplayCategoriesAndSubCategories(appViewModel)
 
             }
@@ -252,7 +244,7 @@ fun CustomButton(
                 .padding(start = 32.dp)
         )
 
-        Icon(
+        /*Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Camera capture icon",
             modifier = Modifier
@@ -264,7 +256,7 @@ fun CustomButton(
             contentDescription = "Expand category",
             modifier = Modifier
                 .clickable { appViewModel.setIsExpanded(true) }
-        )
+        )*/
 
     }
 }
@@ -279,15 +271,6 @@ fun DisplayCategories(appViewModel: AppViewModel){
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                 },
-                appViewModel = appViewModel
-            )
-        }
-
-        if (appViewModel.isExpanded)
-        items(appViewModel.subCategories){subCategory ->
-            CustomButton(
-                text = subCategory.name,
-                onClick = { /*TODO*/ },
                 appViewModel = appViewModel
             )
         }
@@ -307,41 +290,44 @@ fun DisplaySubCategories(appViewModel: AppViewModel){
             )
 
         }
-
-        items(appViewModel.subCategories){}
     }
 }
 
-/*@Composable
-fun DisplayCategoriesAndSubCategories(appViewModel: AppViewModel) {
-    LazyColumn {
-        items(appViewModel.categories) { category ->
-            CustomButton(
-                text = category.name,
-                onClick = {
-                    appViewModel.setSelectedCategory(category)
-                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                    appViewModel.isExpanded = !appViewModel.isExpanded
-                },
-                appViewModel = appViewModel
-            )
+@Composable
+fun AddCategoryTopAppBarBtn(appViewModel: AppViewModel){
+    Button(
+        modifier = Modifier
+            .padding(start = 250.dp),
+        onClick = {
+            appViewModel.showAddCategoryDialog()
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 
-            if (appViewModel.isExpanded && appViewModel.selectedCategory.value == category) {
-                val subCategories = appViewModel.selectedCategory.value?.subCategories?.toList() ?: emptyList()
-                LazyColumn{
-                    items(subCategories) { subCategory ->
-                        CustomButton(
-                            text = subCategory.name,
-                            onClick = {
-
-                            },
-                            appViewModel = appViewModel
-                        )
-                    }
-                }
-
-            }
-        }
+        ) {
+        Text(
+            text = "add category + ",
+            color = Color.Black
+        )
     }
-}*/
+}
+
+@Composable
+fun AddSubCategoryTopAppBarBtn(appViewModel: AppViewModel){
+    Button(
+        modifier = Modifier
+            .padding(start = 250.dp),
+        onClick = {
+            appViewModel.showAddSubCategoryDialog()
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+
+        ) {
+        Text(
+            text = "add subcategory + ",
+            color = Color.Black
+        )
+    }
+}
+
+
 
