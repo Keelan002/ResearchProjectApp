@@ -24,12 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import mtu.research_project.researchprojectapp.AppModel.Category
-import mtu.research_project.researchprojectapp.AppModel.SubCategory
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
-fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (SubCategory) -> Unit) {
+fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) {
     var subCategoryName by rememberSaveable { mutableStateOf("") }
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -60,7 +59,7 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (SubCategory) -> 
                 Button(
                     onClick = {
                         if (subCategoryName.isNotBlank()){
-                            val newSubCategory = SubCategory(subCategoryName)
+                            val newSubCategory = Category(subCategoryName)
                             onAddCategory(newSubCategory)
                         }
                     },

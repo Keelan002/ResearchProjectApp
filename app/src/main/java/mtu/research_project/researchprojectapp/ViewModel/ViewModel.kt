@@ -19,9 +19,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import mtu.research_project.researchprojectapp.AppModel.Categories
 import mtu.research_project.researchprojectapp.AppModel.Category
-import mtu.research_project.researchprojectapp.AppModel.SubCategory
 import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.AddSubCategoryDialog
 import org.koin.android.annotation.KoinViewModel
@@ -52,14 +50,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
-    private val _selectedSubCategory = MutableLiveData<SubCategory?>()
-    var selectedSubCategory: LiveData<SubCategory?> = _selectedSubCategory
-
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
-
-    private val _subCategories: MutableState<List<SubCategory>> = mutableStateOf(emptyList())
-    val subCategories: List<SubCategory> get() = _subCategories.value
 
     var uiState by mutableStateOf(UiState())
         private set
@@ -68,17 +60,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _selectedCategory.value = category
     }
 
-    fun setSelectedSubCategory(subCategory: SubCategory){
-        _selectedSubCategory.value = subCategory
-    }
-
-    private fun createSubCategory(subCategory: SubCategory){
-        _subCategories.value = _subCategories.value + subCategory
-        val category = selectedCategory.value
-        if (category != null){
-            category.subCategories?.add(subCategory)
-        }
-    }
 
     private fun createCategory(category: Category) {
         _categories.value = _categories.value + category
@@ -88,6 +69,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val category = selectedCategory.value
         if (category != null) {
             category.photos?.add(bitmap)
+        }
+    }
+
+    private fun addSubCategoryToCategory(subCategory: Category){
+        val category = selectedCategory.value
+        if (category != null){
+            category.subCategories?.add(subCategory)
         }
     }
 
@@ -123,12 +111,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     @Composable
     fun RunAddSubCategoryDialog(appViewModel: AppViewModel) {
-
         if (uiState.showAddSubCategoryDialog) {
             AddSubCategoryDialog(
                 onDismiss = { hideAddSubCategoryDialog() },
-                onAddCategory = { subCategory ->
-                    createSubCategory(subCategory)
+                onAddCategory = { category ->
+                    //createCategory(category)
+                    addSubCategoryToCategory(category)
                     hideAddSubCategoryDialog()
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                     Log.d("SELECTED CATEGORY SUBS", "${appViewModel.selectedCategory.value!!.subCategories}")

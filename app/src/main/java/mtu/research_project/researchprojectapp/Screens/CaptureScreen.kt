@@ -54,6 +54,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -75,8 +76,7 @@ fun CaptureScreen(navController: NavHostController, appViewModel: AppViewModel) 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppViewModel) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
-    var isViewingSub by remember { mutableStateOf(false) }
+
 
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val permissionState = cameraPermissionState.status.isGranted
@@ -85,6 +85,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
 
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
+    var isViewingSub by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -131,8 +132,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
 
                 if (appViewModel.selectedCategory.value == null){
                     DisplayCategories(appViewModel)
-                }
-                else{
+                }else{
                     DisplaySubCategories(appViewModel)
                 }
 
@@ -205,17 +205,16 @@ fun DisplayCategories(appViewModel: AppViewModel){
 }
 
 @Composable
-fun DisplaySubCategories(appViewModel: AppViewModel){
-    LazyColumn{
-        items(appViewModel.subCategories){subCategory ->
+fun DisplaySubCategories(appViewModel: AppViewModel) {
+    val selectedCategory = appViewModel.selectedCategory.value ?: return
+
+    LazyColumn {
+        items(selectedCategory.subCategories ?: emptyList()) { category ->
             CustomButton(
-                text = subCategory.name,
-                onClick = {
-                  appViewModel.setSelectedSubCategory(subCategory)
-                },
+                text = category.name,
+                onClick = { appViewModel.setSelectedCategory(category) },
                 appViewModel = appViewModel
             )
-
         }
     }
 }
