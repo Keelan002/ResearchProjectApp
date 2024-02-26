@@ -33,7 +33,6 @@ class CameraViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
-        _state.value.capturedImage?.recycle()
         _state.value = _state.value.copy(capturedImage = updatedPhoto)
     }
 
