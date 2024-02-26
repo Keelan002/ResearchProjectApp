@@ -129,6 +129,12 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
+                CustomButton(
+                    text = "TO IMAGE EDITOR",
+                    onClick = { navHController.navigate(Screens.ImageEditorScreen.route)},
+                    appViewModel = appViewModel
+                )
+
 
                 if (appViewModel.selectedCategory.value == null){
                     DisplayCategories(appViewModel)

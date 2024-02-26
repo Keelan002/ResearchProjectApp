@@ -53,6 +53,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
+
     var uiState by mutableStateOf(UiState())
         private set
 

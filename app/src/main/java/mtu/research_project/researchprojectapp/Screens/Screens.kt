@@ -6,4 +6,5 @@ sealed class Screens (val route: String){
     object NoPermissionScreen: Screens("no_permission_screen")
     object MainCameraScreen: Screens("main_camera_screen")
     object CheckPermissionScreen: Screens("check_permission_screen")
+    object ImageEditorScreen: Screens("image_editor_screen")
 }
