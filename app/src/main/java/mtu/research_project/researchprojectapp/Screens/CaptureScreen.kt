@@ -75,6 +75,8 @@ fun CaptureScreen(navController: NavHostController, appViewModel: AppViewModel) 
 @Composable
 fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppViewModel) {
     var selectedTabIndex by remember { mutableStateOf(0) }
+    var isViewingSub by remember { mutableStateOf(false) }
+
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
@@ -88,13 +90,30 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
         topBar = {
             TopAppBar(
                 title = {
+
+                    if (isViewingSub){
+                        Button(
+                            onClick = {
+                                appViewModel.setSelectedCategory(null)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+                        ){
+                            Text(
+                                text = "go back"
+                            )
+                        }
+                    }
+
+
                     Text(
                         text = "App Name",
-
                         )
+
                     if(appViewModel.selectedCategory.value == null){
+                        isViewingSub = false
                         AddCategoryTopAppBarBtn(appViewModel)
                     }else{
+                        isViewingSub = true
                         AddSubCategoryTopAppBarBtn(appViewModel)
                     }
 
@@ -143,8 +162,6 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                 else{
                     DisplaySubCategories(appViewModel)
                 }
-                //DisplayCategoriesAndSubCategories(appViewModel)
-
             }
         },
         floatingActionButton = {
@@ -243,21 +260,6 @@ fun CustomButton(
                 .weight(1f)
                 .padding(start = 32.dp)
         )
-
-        /*Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = "Camera capture icon",
-            modifier = Modifier
-                .clickable { appViewModel.showAddSubCategoryDialog() }
-        )
-
-        Icon(
-            imageVector = Icons.Default.ArrowDownward,
-            contentDescription = "Expand category",
-            modifier = Modifier
-                .clickable { appViewModel.setIsExpanded(true) }
-        )*/
-
     }
 }
 
@@ -284,7 +286,7 @@ fun DisplaySubCategories(appViewModel: AppViewModel){
             CustomButton(
                 text = subCategory.name,
                 onClick = {
-
+                  appViewModel.setSelectedSubCategory(subCategory)
                 },
                 appViewModel = appViewModel
             )

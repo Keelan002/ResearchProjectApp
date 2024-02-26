@@ -82,10 +82,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun createSubCategory(subCategory: SubCategory){
         _subCategories.value = _subCategories.value + subCategory
-
-
         val category = selectedCategory.value
-
         if (category != null){
             category.subCategories?.add(subCategory)
         }
