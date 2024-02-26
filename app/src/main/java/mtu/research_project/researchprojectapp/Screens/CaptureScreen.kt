@@ -141,20 +141,22 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (appViewModel.selectedCategory.value != null) {
-                        navHController.navigate(Screens.MainCameraScreen.route)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 40.dp)
-                    .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
-                contentColor = Color.Black,
-                containerColor = if (updatedSelectedCategory.value == null) Color.Gray else secondaryColor
-            ) {
-                Text("Capture photo")
+            if (appViewModel.selectedCategory.value != null){
+                FloatingActionButton(
+                    onClick = {
+                        if (appViewModel.selectedCategory.value != null) {
+                            navHController.navigate(Screens.MainCameraScreen.route)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 40.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+                    contentColor = Color.Black,
+                    containerColor = if (updatedSelectedCategory.value == null) Color.Gray else secondaryColor
+                ) {
+                    Text("Capture photo")
+                }
             }
         }
     )
