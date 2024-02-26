@@ -16,8 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import mtu.research_project.researchprojectapp.Screens.CameraScreen
 import mtu.research_project.researchprojectapp.Screens.CaptureScreen
 import mtu.research_project.researchprojectapp.Screens.CheckPermissionScreen
-import mtu.research_project.researchprojectapp.Screens.GalleryScreen
-import mtu.research_project.researchprojectapp.Screens.ImageScreen
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
@@ -69,12 +67,6 @@ class MainActivity : AppCompatActivity() {
         ) {
             composable(route = Screens.CaptureScreen.route) {
                 CaptureScreen(navController, appViewModel)
-            }
-            composable(route = Screens.GalleryScreen.route) {
-                GalleryScreen(navController, appViewModel)
-            }
-            composable(route = Screens.ImageScreen.route) {
-                ImageScreen(navController, appViewModel)
             }
             composable(route = Screens.CameraScreen.route) {
                 CameraScreen(cameraViewModel, appViewModel, cameraViewModel, navController)

@@ -160,59 +160,8 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
     )
 }
 
-@Composable
-fun PrimaryTabRowDemo(selectedTabIndex: Int, onTabSelected: (Int) -> Unit, navController: NavHostController) {
-    val periodLabels = listOf(
-        "Capture",
-        "Gallery",
-    )
 
 
-    TabRow(
-        selectedTabIndex = selectedTabIndex,
-        indicator = { tabPositions ->
-            if (selectedTabIndex < tabPositions.size) {
-                PrimaryIndicator(
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                )
-            }
-        },
-        backgroundColor = secondaryColor
-    ) {
-        periodLabels.forEachIndexed { index, title ->
-            Tab(
-                selected = selectedTabIndex == index,
-                onClick = {
-                    onTabSelected(index)
-                    if (index == 0)
-                        navController.navigate(Screens.CaptureScreen.route)
-                    else
-                        navController.navigate(Screens.GalleryScreen.route)
-                },
-                text = {
-                    Text(
-                        text = title
-                    )
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun PrimaryIndicator(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
-    height: Dp = 2.dp
-) {
-    Box(
-        modifier
-            .fillMaxWidth()
-            .height(height)
-            .background(color)
-    )
-}
 
 @Composable
 fun CustomButton(
