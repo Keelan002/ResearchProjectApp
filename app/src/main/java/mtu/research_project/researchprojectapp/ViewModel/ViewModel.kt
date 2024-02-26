@@ -50,13 +50,6 @@ data class UiState(
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
-    var isExpanded by mutableStateOf(false)
-        private set
-
-    fun setIsExpanded(value: Boolean) {
-        isExpanded = value
-    }
-
     private val _selectedCategory = MutableLiveData<Category?>()
     var selectedCategory: LiveData<Category?> = _selectedCategory
 
@@ -92,7 +85,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _categories.value = _categories.value + category
     }
 
-    fun addPhotoToCategory(bitmap: ImageBitmap) {
+    fun addPhotoToCategory(bitmap: Bitmap) {
         val category = selectedCategory.value
         if (category != null) {
             category.photos?.add(bitmap)
@@ -100,10 +93,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Function to retrieve photos from a specific category
-    fun getPhotosFromCategory(categoryName: String, categories: Categories): List<ImageBitmap> {
+    /*fun getPhotosFromCategory(categoryName: String, categories: Categories): List<ImageBitmap> {
         val category = categories.categories?.find { it.name == categoryName }
         return category?.photos ?: emptyList()
-    }
+    }*/
 
     fun showAddCategoryDialog() {
         uiState = uiState.copy(showAddCategoryDialog  = true)

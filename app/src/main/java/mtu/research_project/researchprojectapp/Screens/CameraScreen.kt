@@ -97,15 +97,7 @@ private fun CameraContent(
             ExtendedFloatingActionButton(
                 text = { Text(text = "Back") },
                 onClick = {
-                    capturePhoto(
-                        context = context,
-                        cameraController = cameraController,
-                        appViewModel = appViewModel,
-                        cameraViewModel = cameraViewModel
-                    )
-
                     navController.navigate(Screens.CaptureScreen.route)
-
                 },
                 icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }
             )
@@ -129,14 +121,6 @@ private fun CameraContent(
                     }
                 }
             )
-
-            if (lastCapturedPhoto != null) {
-                LastPhotoPreview(
-                    modifier = Modifier.align(alignment = Alignment.BottomStart),
-                    lastCapturedPhoto = lastCapturedPhoto,
-                    appViewModel = appViewModel
-                )
-            }
         }
     }
 }
@@ -158,6 +142,7 @@ private fun capturePhoto(
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
+            cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
             image.close()
 
         }
@@ -172,11 +157,9 @@ private fun capturePhoto(
 private fun LastPhotoPreview(
     modifier: Modifier = Modifier,
     lastCapturedPhoto: Bitmap,
-    appViewModel: AppViewModel
-) {
+): ImageBitmap {
 
     val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
-    appViewModel.addPhotoToCategory(capturedPhoto)
 
     Card(
         modifier = modifier
@@ -190,4 +173,5 @@ private fun LastPhotoPreview(
             contentScale = ContentScale.Crop
         )
     }
+    return capturedPhoto
 }

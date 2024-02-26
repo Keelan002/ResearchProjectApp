@@ -3,31 +3,32 @@ package mtu.research_project.researchprojectapp.Screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,9 +41,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,7 +54,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import mtu.research_project.researchprojectapp.AppModel.SubCategory
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -82,7 +83,6 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
 
 
-
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
 
@@ -92,16 +92,7 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                 title = {
 
                     if (isViewingSub){
-                        Button(
-                            onClick = {
-                                appViewModel.setSelectedCategory(null)
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-                        ){
-                            Text(
-                                text = "go back"
-                            )
-                        }
+                        GoBackToCategoriesBtn(appViewModel)
                     }
 
 
@@ -128,24 +119,6 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                     .padding(top = 48.dp)
                     .background(primaryColor)
             ) {
-
-
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    PrimaryTabRowDemo(
-                        selectedTabIndex = selectedTabIndex,
-                        onTabSelected = { tabIndex ->
-                            selectedTabIndex = tabIndex
-                        },
-                        navController = navHController
-                    )
-                }
-
                 Text(
                     text = "Please select a category",
                     textAlign = TextAlign.Center,
@@ -162,6 +135,9 @@ fun CaptureScreenContent(navHController: NavHostController, appViewModel: AppVie
                 else{
                     DisplaySubCategories(appViewModel)
                 }
+
+                DisplayImages(appViewModel)
+
             }
         },
         floatingActionButton = {
@@ -327,6 +303,43 @@ fun AddSubCategoryTopAppBarBtn(appViewModel: AppViewModel){
         Text(
             text = "add subcategory + ",
             color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun DisplayImages(appViewModel: AppViewModel) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(appViewModel.selectedCategory.value?.photos?.size ?: 0) { index ->
+            val photo = appViewModel.selectedCategory.value?.photos?.get(index)
+            photo?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(4.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GoBackToCategoriesBtn(appViewModel: AppViewModel){
+    Button(
+        onClick = {
+            appViewModel.setSelectedCategory(null)
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+    ){
+        Text(
+            text = "go back"
         )
     }
 }

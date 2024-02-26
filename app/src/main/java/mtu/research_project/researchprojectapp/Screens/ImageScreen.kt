@@ -127,7 +127,7 @@ fun SearchBar(navController: NavHostController, appViewModel: AppViewModel) {
 }
 
 
-@Composable
+/*@Composable
 fun DisplayImages(appViewModel: AppViewModel) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -148,7 +148,7 @@ fun DisplayImages(appViewModel: AppViewModel) {
             }
         }
     }
-}
+}*/
 
 /*
 @Composable
