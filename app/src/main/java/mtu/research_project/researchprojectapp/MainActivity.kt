@@ -20,12 +20,14 @@ import mtu.research_project.researchprojectapp.Screens.ImageEditorScreen
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
+
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appViewModel: AppViewModel
     private val cameraViewModel: CameraViewModel by viewModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 navController,
                 modifier = Modifier.padding(innerPadding),
                 cameraViewModel = cameraViewModel,
-                appViewModel = appViewModel
+                appViewModel = appViewModel,
             )
         }
     }
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         navController: NavHostController,
         modifier: Modifier = Modifier,
         cameraViewModel: CameraViewModel,
-        appViewModel: AppViewModel
+        appViewModel: AppViewModel,
     ) {
 
 
@@ -67,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             modifier = modifier
         ) {
             composable(route = Screens.CaptureScreen.route) {
-                CaptureScreen(navController, appViewModel)
+                CaptureScreen(navController, appViewModel, cameraViewModel)
             }
             composable(route = Screens.CameraScreen.route) {
                 CameraScreen(cameraViewModel, appViewModel, cameraViewModel, navController)
@@ -76,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                 CheckPermissionScreen(cameraViewModel, appViewModel, navController)
             }
             composable(route = Screens.ImageEditorScreen.route){
-                ImageEditorScreen()
+                ImageEditorScreen(cameraViewModel)
             }
         }
     }

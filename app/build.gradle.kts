@@ -133,4 +133,7 @@ dependencies {
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4")
     debugImplementation ("androidx.compose.ui:ui-tooling")
     debugImplementation ("androidx.compose.ui:ui-test-manifest")
+
+    //IMAGE CROPPING//
+    implementation("io.github.mr0xf00:easycrop:0.1.1")
 }
