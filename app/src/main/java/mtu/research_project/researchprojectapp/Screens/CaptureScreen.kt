@@ -2,7 +2,14 @@ package mtu.research_project.researchprojectapp.Screens
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,7 +18,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +63,7 @@ import com.mr0xf00.easycrop.crop
 import com.mr0xf00.easycrop.rememberImageCropper
 import com.mr0xf00.easycrop.ui.ImageCropperDialog
 import kotlinx.coroutines.launch
+import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -95,6 +107,7 @@ fun CaptureScreenContent(
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     var isViewingSub by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -144,6 +157,11 @@ fun CaptureScreenContent(
                     appViewModel = appViewModel
                 )
 
+                PickImageFromGallery(
+                    context = context,
+                    appViewModel = appViewModel
+                )
+
 
                 if (appViewModel.selectedCategory.value == null){
                     DisplayCategories(appViewModel)
@@ -152,6 +170,10 @@ fun CaptureScreenContent(
                 }
 
                 DisplayImages(appViewModel)
+
+
+
+
 
             }
         },
@@ -173,7 +195,8 @@ fun CaptureScreenContent(
                     Text("Capture photo")
                 }
             }
-        }
+        },
+
     )
 }
 
@@ -313,6 +336,29 @@ fun GoBackToCategoriesBtn(appViewModel: AppViewModel){
         )
     }
 }
+
+@Composable
+fun PickImageFromGallery(context: Context, appViewModel: AppViewModel) {
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        appViewModel.imageUri = uri
+        appViewModel.addPhotoFromGallery(context)
+    }
+
+    Button(
+        onClick = { launcher.launch("image/*") },
+        colors = ButtonDefaults.buttonColors(
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.secondary
+        )
+    )
+    {
+        Text(text = "Pick an image ")
+    }
+}
+
 
 
 

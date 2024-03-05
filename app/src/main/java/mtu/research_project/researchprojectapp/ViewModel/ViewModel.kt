@@ -1,8 +1,16 @@
 package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -14,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -27,6 +36,7 @@ import androidx.lifecycle.viewModelScope
 import com.mr0xf00.easycrop.CropError
 import com.mr0xf00.easycrop.CropResult
 import com.mr0xf00.easycrop.CropState
+import com.mr0xf00.easycrop.CropperLoading
 import com.mr0xf00.easycrop.ImageCropper
 import com.mr0xf00.easycrop.crop
 import com.mr0xf00.easycrop.rememberImageCropper
@@ -57,34 +67,63 @@ class CameraViewModel : ViewModel() {
     }
 
     @Composable
-    fun SimpleDemo( scope: CoroutineScope,
-                    selectedImage: ImageBitmap?,
-                    imageCropper: ImageCropper
-                    ) {
-        //val imageCropper = rememberImageCropper()
+    fun SimpleDemo( selectedImage: ImageBitmap? ) {
+
         var error by remember { mutableStateOf<CropError?>(null) }
+        val imageCropper = rememberImageCropper()
+        val scope = rememberCoroutineScope()
 
 
         if (selectedImage != null){
             scope.launch {
                 when (val result = imageCropper.crop(maxResultSize = null, bmp = selectedImage)) {
-                    CropResult.Cancelled -> {
+                    is CropResult.Cancelled -> {
+                        imageCropper.cropState?.done(true)
                         Log.d("TEST CANCEL EDIT", "SUCCESS")
                     }
                     is CropError -> error = result
                     is CropResult.Success -> {
                         updateCapturedPhotoState(result.bitmap.asAndroidBitmap())
+                        imageCropper.cropState?.done(true)
+                        hideEditImageDialog()
+                        Log.d("TEST CROP SUCCESS", "SUCCESS")
                     }
                 }
             }
         }
 
-        if (imageCropper.cropState != null){
-            ImageCropperDialog(state = imageCropper.cropState!!)
-        }
+        DemoContent(cropState = imageCropper.cropState)
 
+        error?.let { CropErrorDialog(it, onDismiss = { error = null }) }
+    }
+
+    @Composable
+    fun DemoContent(
+        cropState: CropState?,
+    ) {
+        if (cropState != null && uiState.showEditImageDialog) {
+                ImageCropperDialog(state = cropState)
+            }
+    }
+
+    @Composable
+    fun CropErrorDialog(error: CropError, onDismiss: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = { Button(onClick = onDismiss) { Text("Ok") } },
+            text = { Text(text = "ERROR") }
+        )
+    }
+
+    fun showEditImageDialog(){
+        uiState = uiState.copy(showEditImageDialog = true)
+    }
+
+    fun hideEditImageDialog(){
+        uiState = uiState.copy(showEditImageDialog = false)
     }
 }
+
 
 data class UiState(
     val showAddCategoryDialog: Boolean = false,
@@ -92,7 +131,8 @@ data class UiState(
     val showEditImageDialog: Boolean = false
 )
 
-
+var uiState by mutableStateOf(UiState())
+    private set
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -102,8 +142,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
-    var uiState by mutableStateOf(UiState())
-        private set
+    var imageUri by mutableStateOf<Uri?>(null)
+
+    val bitmap = mutableStateOf<Bitmap?>(null)
 
 
     fun setSelectedCategory(category: Category?) {
@@ -119,6 +160,21 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val category = selectedCategory.value
         if (category != null) {
             category.photos?.add(bitmap)
+            Log.d("PHOTOS IN CATEGORY", "${category.photos}")
+        }
+    }
+
+    fun addPhotoFromGallery(context: Context){
+        if (imageUri != null) {
+            bitmap.value = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val src = ImageDecoder.createSource(context.contentResolver, imageUri!!)
+                ImageDecoder.decodeBitmap(src)
+            } else {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+            }
+            bitmap.value?.let { bitmap ->
+                addPhotoToCategory(bitmap)
+            }
         }
     }
 

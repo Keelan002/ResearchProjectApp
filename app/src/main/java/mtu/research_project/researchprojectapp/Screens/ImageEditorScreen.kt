@@ -106,7 +106,7 @@ fun ImageEditorScreenContent(cameraViewModel: CameraViewModel){
             Spacer(modifier = Modifier.width(32.dp))
             ChangeColorBtn(
                 color = Color.Black,
-                onClick = { activateEdit = true }
+                onClick = { cameraViewModel.showEditImageDialog() }
             )
         }
 
@@ -120,13 +120,9 @@ fun ImageEditorScreenContent(cameraViewModel: CameraViewModel){
 
     }
 
-    if (activateEdit){
-        cameraViewModel.SimpleDemo(
-            scope = rememberCoroutineScope(),
-            selectedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap(),
-            imageCropper = rememberImageCropper()
-            )
-    }
+    cameraViewModel.SimpleDemo( selectedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap() )
+
+
     
 }
 
