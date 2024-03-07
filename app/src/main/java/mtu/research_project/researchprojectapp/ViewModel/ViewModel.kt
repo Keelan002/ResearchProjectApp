@@ -179,6 +179,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    @Composable
+    fun RunImageCropperDialog(
+        cropState: CropState?,
+    ) {
+        if (cropState != null) {
+            ImageCropperDialog(state = cropState)
+        }
+    }
+
 
 }
 
