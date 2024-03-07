@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             modifier = modifier
         ) {
             composable(route = Screens.CaptureScreen.route) {
-                CaptureScreen(navController, appViewModel, cameraViewModel)
+                CaptureScreen(navController, appViewModel)
             }
             composable(route = Screens.CameraScreen.route) {
                 CameraScreen(cameraViewModel, appViewModel, cameraViewModel, navController)
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                 CheckPermissionScreen(cameraViewModel, appViewModel, navController)
             }
             composable(route = Screens.ImageEditorScreen.route){
-                ImageEditorScreen(cameraViewModel)
+                ImageEditorScreen(appViewModel, navController)
             }
         }
     }

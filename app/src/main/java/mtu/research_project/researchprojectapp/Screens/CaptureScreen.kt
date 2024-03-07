@@ -20,16 +20,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -68,14 +73,13 @@ import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
-
+import org.w3c.dom.Text
 
 
 @Composable
 fun CaptureScreen(
     navController: NavHostController,
     appViewModel: AppViewModel,
-    cameraViewModel: CameraViewModel
 ) {
     Column(
         modifier = Modifier
@@ -86,7 +90,6 @@ fun CaptureScreen(
 
     appViewModel.RunAddCategoryDialog()
     appViewModel.RunAddSubCategoryDialog(appViewModel)
-    //editImageViewModel.RunEditImageDialog(cameraViewModel)
 
 }
 
@@ -114,25 +117,37 @@ fun CaptureScreenContent(
             TopAppBar(
                 title = {
 
-                    if (isViewingSub){
-                        GoBackToCategoriesBtn(appViewModel)
-                    }
-
-
-                    Text(
-                        text = "App Name",
-                        )
 
                     if(appViewModel.selectedCategory.value == null){
                         isViewingSub = false
-                        AddCategoryTopAppBarBtn(appViewModel)
+                        AddCategoryTopAppBarBtn(
+                            onClick = { appViewModel.showAddCategoryDialog() },
+                            text = "Add Category +"
+                        )
                     }else{
                         isViewingSub = true
-                        AddSubCategoryTopAppBarBtn(appViewModel)
+                        AddCategoryTopAppBarBtn(
+                            onClick = { appViewModel.showAddSubCategoryDialog() },
+                            text = "Add Sub Category +"
+                        )
                     }
+
 
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = secondaryColor),
+
+
+                navigationIcon = {
+                    if (isViewingSub){
+                        IconButton(onClick = {
+                            appViewModel.setSelectedCategory(null)
+                        }) {
+                            Icon(
+                                Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black
+                            )
+                        }
+                    }
+                }
             )
         },
         content = {
@@ -148,19 +163,16 @@ fun CaptureScreenContent(
                     fontSize = 20.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
                 )
 
-                CustomButton(
-                    text = "TO IMAGE EDITOR",
-                    onClick = { navHController.navigate(Screens.ImageEditorScreen.route)},
-                    appViewModel = appViewModel
-                )
+                if(appViewModel.selectedCategory.value != null){
+                    PickImageFromGallery(
+                        context = context,
+                        appViewModel = appViewModel,
+                        navHController = navHController)
+                }
 
-                PickImageFromGallery(
-                    context = context,
-                    appViewModel = appViewModel
-                )
 
 
                 if (appViewModel.selectedCategory.value == null){
@@ -169,32 +181,13 @@ fun CaptureScreenContent(
                     DisplaySubCategories(appViewModel)
                 }
 
-                DisplayImages(appViewModel)
-
-
-
-
+                DisplayImages(appViewModel, navHController)
 
             }
         },
+
         floatingActionButton = {
-            if (appViewModel.selectedCategory.value != null){
-                FloatingActionButton(
-                    onClick = {
-                        if (appViewModel.selectedCategory.value != null) {
-                            navHController.navigate(Screens.MainCameraScreen.route)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 40.dp)
-                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
-                    contentColor = Color.Black,
-                    containerColor = if (updatedSelectedCategory.value == null) Color.Gray else secondaryColor
-                ) {
-                    Text("Capture photo")
-                }
-            }
+            CapturePhotoBtn(appViewModel = appViewModel, navHController = navHController)
         },
 
     )
@@ -208,7 +201,6 @@ fun CustomButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    appViewModel: AppViewModel,
 ) {
     Button(
         onClick = onClick,
@@ -238,7 +230,6 @@ fun DisplayCategories(appViewModel: AppViewModel){
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                 },
-                appViewModel = appViewModel
             )
         }
     }
@@ -253,51 +244,29 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
             CustomButton(
                 text = category.name,
                 onClick = { appViewModel.setSelectedCategory(category) },
-                appViewModel = appViewModel
             )
         }
     }
 }
 
 @Composable
-fun AddCategoryTopAppBarBtn(appViewModel: AppViewModel){
+fun AddCategoryTopAppBarBtn(onClick: () -> Unit, text: String){
     Button(
         modifier = Modifier
-            .padding(start = 250.dp),
-        onClick = {
-            appViewModel.showAddCategoryDialog()
-        },
+            .padding(start = 200.dp),
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 
         ) {
         Text(
-            text = "add category + ",
+            text = text,
             color = Color.Black
         )
     }
 }
 
 @Composable
-fun AddSubCategoryTopAppBarBtn(appViewModel: AppViewModel){
-    Button(
-        modifier = Modifier
-            .padding(start = 250.dp),
-        onClick = {
-            appViewModel.showAddSubCategoryDialog()
-        },
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-
-        ) {
-        Text(
-            text = "add subcategory + ",
-            color = Color.Black
-        )
-    }
-}
-
-@Composable
-fun DisplayImages(appViewModel: AppViewModel) {
-
+fun DisplayImages(appViewModel: AppViewModel, navHController: NavHostController) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -312,7 +281,8 @@ fun DisplayImages(appViewModel: AppViewModel) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .clickable {
-
+                            appViewModel.selectedImage = photo.asImageBitmap()
+                            navHController.navigate(Screens.ImageEditorScreen.route)
                         }
                         .fillMaxWidth()
                         .aspectRatio(1f)
@@ -324,41 +294,50 @@ fun DisplayImages(appViewModel: AppViewModel) {
 }
 
 @Composable
-fun GoBackToCategoriesBtn(appViewModel: AppViewModel){
-    Button(
-        onClick = {
-            appViewModel.setSelectedCategory(null)
-        },
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-    ){
-        Text(
-            text = "go back"
-        )
-    }
-}
-
-@Composable
-fun PickImageFromGallery(context: Context, appViewModel: AppViewModel) {
+fun PickImageFromGallery(context: Context, appViewModel: AppViewModel, navHController: NavHostController) {
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         appViewModel.imageUri = uri
         appViewModel.addPhotoFromGallery(context)
+        navHController.navigate(Screens.CaptureScreen.route)
     }
 
-    Button(
+    FloatingActionButton(
         onClick = { launcher.launch("image/*") },
-        colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            containerColor = MaterialTheme.colorScheme.secondary
-        )
-    )
-    {
+        modifier = Modifier
+            .size(400.dp, 50.dp)
+            .padding(start = 15.dp)
+            .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+        contentColor = Color.Black,
+        containerColor = secondaryColor
+    ) {
         Text(text = "Pick an image ")
     }
+
 }
 
+@Composable
+fun CapturePhotoBtn(appViewModel: AppViewModel, navHController: NavHostController){
+    if (appViewModel.selectedCategory.value != null){
+        FloatingActionButton(
+            onClick = {
+                if (appViewModel.selectedCategory.value != null) {
+                    navHController.navigate(Screens.MainCameraScreen.route)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 40.dp)
+                .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+            contentColor = Color.Black,
+            containerColor = secondaryColor
+        ) {
+            Text("Capture photo")
+        }
+    }
+}
 
 
 
