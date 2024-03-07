@@ -153,25 +153,3 @@ private fun capturePhoto(
     })
 }
 
-@Composable
-private fun LastPhotoPreview(
-    modifier: Modifier = Modifier,
-    lastCapturedPhoto: Bitmap,
-): ImageBitmap {
-
-    val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
-
-    Card(
-        modifier = modifier
-            .size(128.dp)
-            .padding(16.dp),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Image(
-            bitmap = capturedPhoto,
-            contentDescription = "Last captured photo",
-            contentScale = ContentScale.Crop
-        )
-    }
-    return capturedPhoto
-}

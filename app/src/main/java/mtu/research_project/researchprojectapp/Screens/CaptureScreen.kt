@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 import org.w3c.dom.Text
@@ -116,19 +117,21 @@ fun CaptureScreenContent(
         topBar = {
             TopAppBar(
                 title = {
-
-
                     if(appViewModel.selectedCategory.value == null){
                         isViewingSub = false
-                        AddCategoryTopAppBarBtn(
+                        CustomButton(
                             onClick = { appViewModel.showAddCategoryDialog() },
-                            text = "Add Category +"
+                            text = "Add Category +",
+                            modifier = Modifier
+                                .padding(start = 200.dp)
                         )
                     }else{
                         isViewingSub = true
-                        AddCategoryTopAppBarBtn(
+                        CustomButton(
                             onClick = { appViewModel.showAddSubCategoryDialog() },
-                            text = "Add Sub Category +"
+                            text = "Add Sub Category +",
+                            modifier = Modifier
+                                .padding(start = 200.dp)
                         )
                     }
 
@@ -136,12 +139,13 @@ fun CaptureScreenContent(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = secondaryColor),
 
-
                 navigationIcon = {
                     if (isViewingSub){
-                        IconButton(onClick = {
+                        IconButton(
+                            onClick = {
                             appViewModel.setSelectedCategory(null)
-                        }) {
+                            }
+                        ) {
                             Icon(
                                 Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black
                             )
@@ -197,34 +201,13 @@ fun CaptureScreenContent(
 
 
 @Composable
-fun CustomButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = 30.dp, end = 30.dp)
-    ) {
-
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 32.dp)
-        )
-    }
-}
-
-@Composable
 fun DisplayCategories(appViewModel: AppViewModel){
     LazyColumn{
         items(appViewModel.categories){category ->
             CustomButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 30.dp, end = 30.dp),
                 text = category.name,
                 onClick = {
                     appViewModel.setSelectedCategory(category)
@@ -242,6 +225,9 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
     LazyColumn {
         items(selectedCategory.subCategories ?: emptyList()) { category ->
             CustomButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 30.dp, end = 30.dp),
                 text = category.name,
                 onClick = { appViewModel.setSelectedCategory(category) },
             )
@@ -249,21 +235,7 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
     }
 }
 
-@Composable
-fun AddCategoryTopAppBarBtn(onClick: () -> Unit, text: String){
-    Button(
-        modifier = Modifier
-            .padding(start = 200.dp),
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
 
-        ) {
-        Text(
-            text = text,
-            color = Color.Black
-        )
-    }
-}
 
 @Composable
 fun DisplayImages(appViewModel: AppViewModel, navHController: NavHostController) {
