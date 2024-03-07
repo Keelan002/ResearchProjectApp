@@ -75,11 +75,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
+    private val _listOfTitles: MutableState<List<String>> = mutableStateOf(emptyList())
+    val listOfTitles: List<String> get() = _listOfTitles.value
+
     var imageUri by mutableStateOf<Uri?>(null)
 
     val bitmap = mutableStateOf<Bitmap?>(null)
 
     var selectedImage by mutableStateOf<ImageBitmap?>(null)
+
+    fun addTitleToList(title: String){
+        _listOfTitles.value = _listOfTitles.value + title
+    }
 
 
     fun setSelectedCategory(category: Category?) {

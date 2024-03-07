@@ -17,11 +17,14 @@ import mtu.research_project.researchprojectapp.Screens.CameraScreen
 import mtu.research_project.researchprojectapp.Screens.CaptureScreen
 import mtu.research_project.researchprojectapp.Screens.CheckPermissionScreen
 import mtu.research_project.researchprojectapp.Screens.ImageEditorScreen
+import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreeContent
+import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreen
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.ScopeID
 
 class MainActivity : AppCompatActivity() {
 
@@ -79,6 +82,9 @@ class MainActivity : AppCompatActivity() {
             }
             composable(route = Screens.ImageEditorScreen.route){
                 ImageEditorScreen(appViewModel, navController)
+            }
+            composable(route = Screens.ImagePreviewScreen.route){
+                ImagePreviewScreen(appViewModel, cameraViewModel, navController)
             }
         }
     }

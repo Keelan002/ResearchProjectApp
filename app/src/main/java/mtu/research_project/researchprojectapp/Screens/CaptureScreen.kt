@@ -3,10 +3,6 @@ package mtu.research_project.researchprojectapp.Screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,42 +14,41 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,19 +57,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.mr0xf00.easycrop.CropError
-import com.mr0xf00.easycrop.CropResult
-import com.mr0xf00.easycrop.crop
-import com.mr0xf00.easycrop.rememberImageCropper
-import com.mr0xf00.easycrop.ui.ImageCropperDialog
-import kotlinx.coroutines.launch
-import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
-import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
-import org.w3c.dom.Text
 
 
 @Composable
@@ -107,7 +93,7 @@ fun CaptureScreenContent(
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
 
-
+    val titles = appViewModel.listOfTitles
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     var isViewingSub by remember { mutableStateOf(false) }
@@ -185,7 +171,7 @@ fun CaptureScreenContent(
                     DisplaySubCategories(appViewModel)
                 }
 
-                DisplayImages(appViewModel, navHController)
+                DisplayImages(titles, appViewModel, navHController)
 
             }
         },
@@ -237,9 +223,8 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
 
 
 
-@Composable
+/*@Composable
 fun DisplayImages(appViewModel: AppViewModel, navHController: NavHostController) {
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize()
@@ -260,6 +245,43 @@ fun DisplayImages(appViewModel: AppViewModel, navHController: NavHostController)
                         .aspectRatio(1f)
                         .padding(4.dp),
                 )
+            }
+        }
+    }
+}*/
+
+@Composable
+fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHController: NavHostController) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize()
+    )  {
+        itemsIndexed(titles) { index, title ->
+            Column {
+                Text(
+                    text = title,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+                val photo = appViewModel.selectedCategory.value?.photos?.getOrNull(index)
+                photo?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clickable {
+                                appViewModel.selectedImage = photo.asImageBitmap()
+                                navHController.navigate(Screens.ImageEditorScreen.route)
+                            }
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(4.dp),
+                    )
+                }
             }
         }
     }
