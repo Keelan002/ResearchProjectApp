@@ -17,7 +17,7 @@ import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
-fun EditImage(
+fun EditExistingImage(
     selectedImage: ImageBitmap?,
     appViewModel: AppViewModel,
     navController: NavController
@@ -31,11 +31,16 @@ fun EditImage(
                 CropResult.Cancelled -> {}
                 is CropError -> error = result
                 is CropResult.Success -> {
+
                     appViewModel.replacePhotoInCategory(
                         oldImage = selectedImage.asAndroidBitmap(),
                         newImage = result.bitmap.asAndroidBitmap()
                     )
-                    navController.navigate(Screens.CaptureScreen.route)
+
+                    appViewModel.selectedImage = result.bitmap
+
+
+                    navController.navigate(Screens.ImagePreviewScreen.route)
                 }
                 else -> {}
             }

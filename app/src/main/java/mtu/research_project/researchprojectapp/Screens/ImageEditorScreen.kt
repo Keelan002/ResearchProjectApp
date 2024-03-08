@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import mtu.research_project.researchprojectapp.ImageEdit.EditImage
+import mtu.research_project.researchprojectapp.ImageEdit.EditExistingImage
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
@@ -26,11 +26,17 @@ fun ImageEditorScreen(appViewModel: AppViewModel, navController: NavController){
 fun ImageEditorScreenContent(appViewModel: AppViewModel, navController: NavController){
 
 
-        EditImage(
+    val isEditingExistingImage = appViewModel.isEditingExistingPhoto.value
+
+    if (isEditingExistingImage){
+        EditExistingImage(
             selectedImage = appViewModel.selectedImage,
             appViewModel = appViewModel,
             navController = navController
         )
+    }
+
+
 
 }
 

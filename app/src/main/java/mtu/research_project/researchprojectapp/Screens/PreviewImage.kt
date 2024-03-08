@@ -192,6 +192,8 @@ fun EditExistingPhoto(
         modifier = Modifier
             .fillMaxWidth()
     ){
+
+        /*TO-DO fix bug where photo in not deletd internally*/
         CustomButton(
             text = "Delete photo",
             onClick = {
@@ -203,7 +205,6 @@ fun EditExistingPhoto(
         CustomButton(
             text = "Edit photo",
             onClick = {
-                appViewModel.selectedImage = selectedImage
                 navHController.navigate(Screens.ImageEditorScreen.route)
             }
         )
@@ -212,8 +213,6 @@ fun EditExistingPhoto(
             text = "Submit",
             onClick = {
                 if (imageTitle != ""){
-                    appViewModel.addTitleToList(imageTitle)
-                    cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
                     navHController.navigate(Screens.CaptureScreen.route)
                 }
             }
