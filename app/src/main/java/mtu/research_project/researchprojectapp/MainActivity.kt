@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 CheckPermissionScreen(cameraViewModel, appViewModel, navController)
             }
             composable(route = Screens.ImageEditorScreen.route){
-                ImageEditorScreen(appViewModel, navController)
+                ImageEditorScreen(appViewModel, navController, cameraViewModel)
             }
             composable(route = Screens.ImagePreviewScreen.route){
                 ImagePreviewScreen(appViewModel, cameraViewModel, navController)

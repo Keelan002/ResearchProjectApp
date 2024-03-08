@@ -1,14 +1,21 @@
 package mtu.research_project.researchprojectapp.Utils
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 
 @Composable
@@ -32,4 +39,34 @@ fun CustomButton(
                 .padding(start = 32.dp)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                text = label,
+                color = Color.Black
+            )
+        },
+        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+        singleLine = true,
+        shape = RectangleShape,
+        colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.White,
+            containerColor = SnackbarDefaults.backgroundColor,
+            focusedIndicatorColor = secondaryColor,
+            unfocusedIndicatorColor = secondaryColor,
+            disabledIndicatorColor = Color.White,
+        ),
+    )
+
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomButton
+import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
@@ -83,49 +84,15 @@ fun ImagePreviewScreeContent(
         if (selectedImage != null) {
             EditExistingPhoto(
                 appViewModel = appViewModel,
-                cameraViewModel = cameraViewModel,
                 navHController = navHController,
                 selectedImage = selectedImage,
                 imageTitle = imageTitle
             )
         }
     }
-
-
-
-
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                text = label,
-                color = Color.Black
-            )
-        },
-        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
-        singleLine = true,
-        shape = RectangleShape,
-        colors = TextFieldDefaults.textFieldColors(
-            cursorColor = Color.White,
-            containerColor = backgroundColor,
-            focusedIndicatorColor = secondaryColor,
-            unfocusedIndicatorColor = secondaryColor,
-            disabledIndicatorColor = Color.White,
-        ),
-    )
 
-}
 
 @Composable
 fun PreviewNewPhoto(
@@ -157,7 +124,9 @@ fun PreviewNewPhoto(
         CustomButton(
             text = "Edit photo",
             onClick = {
-                appViewModel.selectedImage = lastCapturedImage
+
+
+
                 navHController.navigate(Screens.ImageEditorScreen.route)
             }
         )
@@ -178,7 +147,6 @@ fun PreviewNewPhoto(
 @Composable
 fun EditExistingPhoto(
     appViewModel: AppViewModel,
-    cameraViewModel: CameraViewModel,
     navHController: NavHostController,
     selectedImage: ImageBitmap,
     imageTitle: String

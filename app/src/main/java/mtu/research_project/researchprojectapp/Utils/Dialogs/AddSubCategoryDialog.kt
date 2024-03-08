@@ -1,6 +1,5 @@
-package mtu.research_project.researchprojectapp.Utils
+package mtu.research_project.researchprojectapp.Utils.Dialogs
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -25,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
-import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
 fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) {

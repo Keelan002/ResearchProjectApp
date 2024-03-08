@@ -1,4 +1,4 @@
-package mtu.research_project.researchprojectapp.Utils
+package mtu.research_project.researchprojectapp.Utils.Dialogs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

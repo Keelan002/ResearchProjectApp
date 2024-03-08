@@ -5,28 +5,39 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.navigation.NavController
 import mtu.research_project.researchprojectapp.ImageEdit.EditExistingImage
+import mtu.research_project.researchprojectapp.ImageEdit.EditTakenPhoto
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
+import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
 
 @Composable
-fun ImageEditorScreen(appViewModel: AppViewModel, navController: NavController){
+fun ImageEditorScreen(
+    appViewModel: AppViewModel,
+    navController: NavController,
+    cameraViewModel: CameraViewModel
+){
     Column(
         modifier = Modifier
             .background(primaryColor)
             .fillMaxSize()
     ) {
-        ImageEditorScreenContent(appViewModel, navController)
+        ImageEditorScreenContent(appViewModel, navController, cameraViewModel)
     }
 }
 
 @Composable
-fun ImageEditorScreenContent(appViewModel: AppViewModel, navController: NavController){
-
+fun ImageEditorScreenContent(
+    appViewModel: AppViewModel,
+    navController: NavController,
+    cameraViewModel: CameraViewModel
+){
 
     val isEditingExistingImage = appViewModel.isEditingExistingPhoto.value
+    val capturedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap()
 
     if (isEditingExistingImage){
         EditExistingImage(
@@ -34,10 +45,14 @@ fun ImageEditorScreenContent(appViewModel: AppViewModel, navController: NavContr
             appViewModel = appViewModel,
             navController = navController
         )
+    }else{
+        EditTakenPhoto(
+            selectedImage = capturedImage,
+            appViewModel = appViewModel,
+            navController = navController,
+            cameraViewModel = cameraViewModel
+        )
     }
-
-
-
 }
 
 

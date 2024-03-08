@@ -15,6 +15,7 @@ import com.mr0xf00.easycrop.crop
 import com.mr0xf00.easycrop.rememberImageCropper
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
+import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
 @Composable
 fun EditExistingImage(
@@ -50,4 +51,41 @@ fun EditExistingImage(
     appViewModel.RunImageCropperDialog(
         cropState = imageCropper.cropState,
     )
+}
+
+@Composable
+fun EditTakenPhoto(
+    selectedImage: ImageBitmap?,
+    appViewModel: AppViewModel,
+    cameraViewModel: CameraViewModel,
+    navController: NavController
+){
+        val imageCropper = rememberImageCropper()
+        var error by remember { mutableStateOf<CropError?>(null) }
+
+        LaunchedEffect(selectedImage) {
+            if (selectedImage != null) {
+                when (val result = imageCropper.crop(maxResultSize = null, bmp = selectedImage)) {
+                    CropResult.Cancelled -> {}
+                    is CropError -> error = result
+                    is CropResult.Success -> {
+
+                        /*appViewModel.replacePhotoInCategory(
+                            oldImage = selectedImage.asAndroidBitmap(),
+                            newImage = result.bitmap.asAndroidBitmap()
+                        )*/
+
+                        cameraViewModel.updateCapturedPhotoState(result.bitmap.asAndroidBitmap())
+
+
+                        navController.navigate(Screens.ImagePreviewScreen.route)
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        appViewModel.RunImageCropperDialog(
+            cropState = imageCropper.cropState,
+        )
 }

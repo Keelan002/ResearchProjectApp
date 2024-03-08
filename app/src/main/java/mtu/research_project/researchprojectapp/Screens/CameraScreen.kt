@@ -88,7 +88,6 @@ private fun CameraContent(
                     capturePhoto(
                         context = context,
                         cameraController = cameraController,
-                        appViewModel = appViewModel,
                         cameraViewModel = cameraViewModel
                     )
                 },
@@ -97,6 +96,7 @@ private fun CameraContent(
             ExtendedFloatingActionButton(
                 text = { Text(text = "Back") },
                 onClick = {
+                    appViewModel.updateBooleanValue(false)
                     navController.navigate(Screens.ImagePreviewScreen.route)
                 },
                 icon = { Icon(imageVector = Icons.Default.Face, contentDescription = "Camera capture icon") }
@@ -129,7 +129,6 @@ private fun CameraContent(
 private fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController,
-    appViewModel: AppViewModel,
     cameraViewModel: CameraViewModel,
 ) {
 
@@ -142,7 +141,6 @@ private fun capturePhoto(
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
-            //cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
             image.close()
 
         }

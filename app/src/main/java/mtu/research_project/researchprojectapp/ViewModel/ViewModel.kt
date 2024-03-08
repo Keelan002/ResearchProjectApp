@@ -24,8 +24,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.CameraX.CameraState
-import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
-import mtu.research_project.researchprojectapp.Utils.AddSubCategoryDialog
+import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
+import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
