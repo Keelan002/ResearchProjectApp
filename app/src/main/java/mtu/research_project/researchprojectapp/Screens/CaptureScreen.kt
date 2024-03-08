@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -60,18 +61,20 @@ import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
+import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
 
 @Composable
 fun CaptureScreen(
     navController: NavHostController,
     appViewModel: AppViewModel,
+    cameraViewModel: CameraViewModel
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        CaptureScreenContent(navController, appViewModel)
+        CaptureScreenContent(navController, appViewModel, cameraViewModel)
     }
 
     appViewModel.RunAddCategoryDialog()
@@ -85,6 +88,7 @@ fun CaptureScreen(
 fun CaptureScreenContent(
     navHController: NavHostController,
     appViewModel: AppViewModel,
+    cameraViewModel: CameraViewModel
 ) {
 
 
@@ -159,7 +163,9 @@ fun CaptureScreenContent(
                     PickImageFromGallery(
                         context = context,
                         appViewModel = appViewModel,
-                        navHController = navHController)
+                        navHController = navHController,
+                        cameraViewModel = cameraViewModel
+                       )
                 }
 
 
@@ -244,7 +250,7 @@ fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHControll
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .clickable {
-                                appViewModel.updateBooleanValue(true)
+                                appViewModel.updateIsEditingExistingPhotoBool(true)
                                 appViewModel.selectedImage = photo.asImageBitmap()
                                 navHController.navigate(Screens.ImagePreviewScreen.route)
                             }
@@ -259,14 +265,22 @@ fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHControll
 }
 
 @Composable
-fun PickImageFromGallery(context: Context, appViewModel: AppViewModel, navHController: NavHostController) {
+fun PickImageFromGallery(
+    context: Context,
+    appViewModel: AppViewModel,
+    navHController: NavHostController,
+    cameraViewModel: CameraViewModel
+) {
+
+
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        appViewModel.imageUri = uri
-        appViewModel.addPhotoFromGallery(context)
-        navHController.navigate(Screens.CaptureScreen.route)
+        appViewModel.updateIsEditingExistingPhotoBool(false)
+        val bitmap = uri?.let { appViewModel.loadImageFromUriAsBitmap(context, it) }
+        cameraViewModel.updateCapturedPhotoState(bitmap)
+        navHController.navigate(Screens.ImagePreviewScreen.route)
     }
 
     FloatingActionButton(

@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             modifier = modifier
         ) {
             composable(route = Screens.CaptureScreen.route) {
-                CaptureScreen(navController, appViewModel)
+                CaptureScreen(navController, appViewModel, cameraViewModel)
             }
             composable(route = Screens.CameraScreen.route) {
                 CameraScreen(cameraViewModel, appViewModel, cameraViewModel, navController)

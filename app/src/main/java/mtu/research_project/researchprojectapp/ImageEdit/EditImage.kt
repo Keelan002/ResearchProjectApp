@@ -39,8 +39,6 @@ fun EditExistingImage(
                     )
 
                     appViewModel.selectedImage = result.bitmap
-
-
                     navController.navigate(Screens.ImagePreviewScreen.route)
                 }
                 else -> {}
@@ -70,14 +68,7 @@ fun EditTakenPhoto(
                     is CropError -> error = result
                     is CropResult.Success -> {
 
-                        /*appViewModel.replacePhotoInCategory(
-                            oldImage = selectedImage.asAndroidBitmap(),
-                            newImage = result.bitmap.asAndroidBitmap()
-                        )*/
-
                         cameraViewModel.updateCapturedPhotoState(result.bitmap.asAndroidBitmap())
-
-
                         navController.navigate(Screens.ImagePreviewScreen.route)
                     }
                     else -> {}

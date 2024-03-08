@@ -1,17 +1,12 @@
 package mtu.research_project.researchprojectapp.Screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.SnackbarDefaults.backgroundColor
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,21 +14,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
+import androidx.compose.ui.platform.LocalDensity
 
 @Composable
 fun ImagePreviewScreen(appViewModel: AppViewModel, cameraViewModel: CameraViewModel, navHController: NavHostController){
@@ -102,45 +93,59 @@ fun PreviewNewPhoto(
     lastCapturedImage: ImageBitmap,
     imageTitle: String
 ){
-
-    Image(
-        bitmap = lastCapturedImage,
-        contentDescription = "last captured image"
-    )
-
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        CustomButton(
-            text = "Retake photo",
-            onClick = {
-                if (appViewModel.selectedCategory.value != null) {
-                    navHController.navigate(Screens.MainCameraScreen.route)
+        BoxWithConstraints(modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    bitmap = lastCapturedImage,
+                    contentDescription = "Last captured image",
+                    modifier = Modifier
+                        .scale(getImageScaleConstraints(
+                            maxHeight = 200, maxWidth = 200
+                        ))
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ){
+            CustomButton(
+                text = "Retake photo",
+                onClick = {
+                    if (appViewModel.selectedCategory.value != null) {
+                        navHController.navigate(Screens.MainCameraScreen.route)
+                    }
                 }
-            }
-        )
+            )
 
-        CustomButton(
-            text = "Edit photo",
-            onClick = {
-
-
-
-                navHController.navigate(Screens.ImageEditorScreen.route)
-            }
-        )
-
-        CustomButton(
-            text = "Submit",
-            onClick = {
-                if (imageTitle != ""){
-                    appViewModel.addTitleToList(imageTitle)
-                    cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
-                    navHController.navigate(Screens.CaptureScreen.route)
+            CustomButton(
+                text = "Edit photo",
+                onClick = {
+                    navHController.navigate(Screens.ImageEditorScreen.route)
                 }
-            }
-        )
+            )
+
+            CustomButton(
+                text = "Submit",
+                onClick = {
+                    if (imageTitle != ""){
+                        appViewModel.addTitleToList(imageTitle)
+                        cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
+                        navHController.navigate(Screens.CaptureScreen.route)
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -150,16 +155,28 @@ fun EditExistingPhoto(
     navHController: NavHostController,
     selectedImage: ImageBitmap,
     imageTitle: String
-){
-    Image(
-        bitmap = selectedImage,
-        contentDescription = "last captured image"
-    )
-
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ){
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        BoxWithConstraints(modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    bitmap = selectedImage,
+                    contentDescription = "Last captured image",
+                    modifier = Modifier
+                        .scale(getImageScaleConstraints(
+                            maxHeight = 200, maxWidth = 200
+                        ))
+                )
+            }
+        }
 
         /*TO-DO fix bug where photo in not deletd internally*/
         CustomButton(
@@ -180,10 +197,24 @@ fun EditExistingPhoto(
         CustomButton(
             text = "Submit",
             onClick = {
-                if (imageTitle != ""){
+                if (imageTitle.isNotBlank()) {
                     navHController.navigate(Screens.CaptureScreen.route)
                 }
             }
         )
     }
+}
+
+@Composable
+private fun getImageScaleConstraints(maxWidth: Int, maxHeight: Int): Float {
+    // Set the desired maximum size of the image
+
+    val maxWidthValue = LocalDensity.current.run { maxWidth.dp.toPx() }
+
+    val maxHeightValue = LocalDensity.current.run { maxHeight.dp.toPx() }
+
+    // Calculate the scale based on the constraints
+    val scale = minOf(maxWidthValue / 200f, maxHeightValue / 200f)
+
+    return if (scale < 1) scale else 1f
 }

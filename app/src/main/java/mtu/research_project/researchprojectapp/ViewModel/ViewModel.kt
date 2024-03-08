@@ -3,7 +3,9 @@ package mtu.research_project.researchprojectapp.ViewModel
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -14,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +31,7 @@ import mtu.research_project.researchprojectapp.CameraX.CameraState
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
 import org.koin.android.annotation.KoinViewModel
+import java.io.InputStream
 
 @KoinViewModel
 class CameraViewModel : ViewModel() {
@@ -73,12 +78,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     var imageUri by mutableStateOf<Uri?>(null)
 
-    val bitmap = mutableStateOf<Bitmap?>(null)
+    private val bitmap = mutableStateOf<Bitmap?>(null)
 
     var selectedImage by mutableStateOf<ImageBitmap?>(null)
 
 
-    fun updateBooleanValue(newValue: Boolean) {
+    fun updateIsEditingExistingPhotoBool(newValue: Boolean) {
         _isEditingExistingPhoto.value = newValue
     }
 
@@ -152,6 +157,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 updatedTitles.removeAt(index)
                 _listOfTitles.value = updatedTitles
             }
+        }
+    }
+
+    fun loadImageFromUriAsBitmap(context: Context, uri: Uri): Bitmap? {
+        return try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            inputStream?.use {
+                BitmapFactory.decodeStream(it)
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 
