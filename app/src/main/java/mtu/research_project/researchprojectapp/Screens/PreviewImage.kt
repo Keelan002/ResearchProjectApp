@@ -20,7 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +57,8 @@ fun ImagePreviewScreeContent(
 
     var imageTitle by rememberSaveable { mutableStateOf("") }
     val lastCapturedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap()
+    val selectedImage = appViewModel.selectedImage
+    val isEditingExistingPhoto = appViewModel.isEditingExistingPhoto.value
 
     CustomTextField(
         value = imageTitle,
@@ -63,46 +67,30 @@ fun ImagePreviewScreeContent(
     )
 
 
-    if (lastCapturedImage != null) {
-        Image(
-            bitmap = lastCapturedImage,
-            contentDescription = "last captured image"
-        )
+    if (!isEditingExistingPhoto){
+        if (lastCapturedImage != null ) {
+            PreviewNewPhoto(
+                appViewModel = appViewModel,
+                cameraViewModel = cameraViewModel,
+                navHController = navHController,
+                lastCapturedImage = lastCapturedImage,
+                imageTitle = imageTitle
+            )
+        }
     }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ){
-        CustomButton(
-            text = "Retake photo",
-            onClick = {
-                if (appViewModel.selectedCategory.value != null) {
-                    navHController.navigate(Screens.MainCameraScreen.route)
-                }
-            }
-        )
-
-        CustomButton(
-            text = "Edit photo",
-            onClick = {
-                appViewModel.selectedImage = lastCapturedImage
-                navHController.navigate(Screens.ImageEditorScreen.route)
-            }
-        )
-
-        CustomButton(
-            text = "Submit",
-            onClick = {
-                if (imageTitle != ""){
-                    appViewModel.addTitleToList(imageTitle)
-                    cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
-                    navHController.navigate(Screens.CaptureScreen.route)
-                }
-            }
-        )
+    if (isEditingExistingPhoto){
+        if (selectedImage != null) {
+            EditExistingPhoto(
+                appViewModel = appViewModel,
+                cameraViewModel = cameraViewModel,
+                navHController = navHController,
+                selectedImage = selectedImage,
+                imageTitle = imageTitle
+            )
+        }
     }
+
 
 
 
@@ -137,4 +125,98 @@ fun CustomTextField(
         ),
     )
 
+}
+
+@Composable
+fun PreviewNewPhoto(
+    appViewModel: AppViewModel,
+    cameraViewModel: CameraViewModel,
+    navHController: NavHostController,
+    lastCapturedImage: ImageBitmap,
+    imageTitle: String
+){
+
+    Image(
+        bitmap = lastCapturedImage,
+        contentDescription = "last captured image"
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        CustomButton(
+            text = "Retake photo",
+            onClick = {
+                if (appViewModel.selectedCategory.value != null) {
+                    navHController.navigate(Screens.MainCameraScreen.route)
+                }
+            }
+        )
+
+        CustomButton(
+            text = "Edit photo",
+            onClick = {
+                appViewModel.selectedImage = lastCapturedImage
+                navHController.navigate(Screens.ImageEditorScreen.route)
+            }
+        )
+
+        CustomButton(
+            text = "Submit",
+            onClick = {
+                if (imageTitle != ""){
+                    appViewModel.addTitleToList(imageTitle)
+                    cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
+                    navHController.navigate(Screens.CaptureScreen.route)
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun EditExistingPhoto(
+    appViewModel: AppViewModel,
+    cameraViewModel: CameraViewModel,
+    navHController: NavHostController,
+    selectedImage: ImageBitmap,
+    imageTitle: String
+){
+    Image(
+        bitmap = selectedImage,
+        contentDescription = "last captured image"
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        CustomButton(
+            text = "Delete photo",
+            onClick = {
+                appViewModel.removePhotoAndTitle(selectedImage.asAndroidBitmap())
+                navHController.navigate(Screens.CaptureScreen.route)
+            }
+        )
+
+        CustomButton(
+            text = "Edit photo",
+            onClick = {
+                appViewModel.selectedImage = selectedImage
+                navHController.navigate(Screens.ImageEditorScreen.route)
+            }
+        )
+
+        CustomButton(
+            text = "Submit",
+            onClick = {
+                if (imageTitle != ""){
+                    appViewModel.addTitleToList(imageTitle)
+                    cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
+                    navHController.navigate(Screens.CaptureScreen.route)
+                }
+            }
+        )
+    }
 }

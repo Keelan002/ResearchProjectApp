@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -221,35 +220,6 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
     }
 }
 
-
-
-/*@Composable
-fun DisplayImages(appViewModel: AppViewModel, navHController: NavHostController) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(appViewModel.selectedCategory.value?.photos?.size ?: 0) { index ->
-            val photo = appViewModel.selectedCategory.value?.photos?.get(index)
-            photo?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .clickable {
-                            appViewModel.selectedImage = photo.asImageBitmap()
-                            navHController.navigate(Screens.ImageEditorScreen.route)
-                        }
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .padding(4.dp),
-                )
-            }
-        }
-    }
-}*/
-
 @Composable
 fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHController: NavHostController) {
     LazyVerticalGrid(
@@ -274,8 +244,9 @@ fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHControll
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .clickable {
+                                appViewModel.updateBooleanValue(true)
                                 appViewModel.selectedImage = photo.asImageBitmap()
-                                navHController.navigate(Screens.ImageEditorScreen.route)
+                                navHController.navigate(Screens.ImagePreviewScreen.route)
                             }
                             .fillMaxWidth()
                             .aspectRatio(1f)

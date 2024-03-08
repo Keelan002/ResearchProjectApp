@@ -8,31 +8,20 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mr0xf00.easycrop.CropError
-import com.mr0xf00.easycrop.CropResult
 import com.mr0xf00.easycrop.CropState
-import com.mr0xf00.easycrop.crop
-import com.mr0xf00.easycrop.rememberImageCropper
 import com.mr0xf00.easycrop.ui.ImageCropperDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import mtu.research_project.researchprojectapp.Utils.AddCategoryDialog
@@ -78,11 +67,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _listOfTitles: MutableState<List<String>> = mutableStateOf(emptyList())
     val listOfTitles: List<String> get() = _listOfTitles.value
 
+    private val _isEditingExistingPhoto = mutableStateOf(false)
+
+    val  isEditingExistingPhoto: MutableState<Boolean> = _isEditingExistingPhoto
+
     var imageUri by mutableStateOf<Uri?>(null)
 
     val bitmap = mutableStateOf<Bitmap?>(null)
 
     var selectedImage by mutableStateOf<ImageBitmap?>(null)
+
+
+    fun updateBooleanValue(newValue: Boolean) {
+        _isEditingExistingPhoto.value = newValue
+    }
 
     fun addTitleToList(title: String){
         _listOfTitles.value = _listOfTitles.value + title
@@ -137,6 +135,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     // Replace the old image with the new one
                     photos[index] = newImage
                 }
+            }
+        }
+    }
+
+    fun removePhotoAndTitle(selectedPhoto: Bitmap) {
+        val category = selectedCategory.value
+        if (category != null) {
+            val index = category.photos?.indexOf(selectedPhoto)
+            if (index != null && index != -1) {
+                val updatedPhotos = category.photos.toMutableList()
+                updatedPhotos.removeAt(index)
+                _selectedCategory.value = category.copy(photos = updatedPhotos)
+
+                val updatedTitles = _listOfTitles.value.toMutableList()
+                updatedTitles.removeAt(index)
+                _listOfTitles.value = updatedTitles
             }
         }
     }
