@@ -55,7 +55,7 @@ fun ImagePreviewScreeContent(
     CustomTextField(
         value = imageTitle,
         onValueChange = { imageTitle = it },
-        label = "enter image title here"
+        placeholder = "enter image title here"
     )
 
 
@@ -73,7 +73,7 @@ fun ImagePreviewScreeContent(
 
     if (isEditingExistingPhoto){
         if (selectedImage != null) {
-            EditExistingPhoto(
+            PreviewExistingPhoto(
                 appViewModel = appViewModel,
                 navHController = navHController,
                 selectedImage = selectedImage,
@@ -108,9 +108,7 @@ fun PreviewNewPhoto(
                     bitmap = lastCapturedImage,
                     contentDescription = "Last captured image",
                     modifier = Modifier
-                        .scale(getImageScaleConstraints(
-                            maxHeight = 200, maxWidth = 200
-                        ))
+                        .scale(getImageScaleConstraints())
                 )
             }
         }
@@ -138,7 +136,7 @@ fun PreviewNewPhoto(
             CustomButton(
                 text = "Submit",
                 onClick = {
-                    if (imageTitle != ""){
+                    if (imageTitle.isNotBlank()){
                         appViewModel.addTitleToList(imageTitle)
                         cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
                         navHController.navigate(Screens.CaptureScreen.route)
@@ -150,7 +148,7 @@ fun PreviewNewPhoto(
 }
 
 @Composable
-fun EditExistingPhoto(
+fun PreviewExistingPhoto(
     appViewModel: AppViewModel,
     navHController: NavHostController,
     selectedImage: ImageBitmap,
@@ -171,9 +169,7 @@ fun EditExistingPhoto(
                     bitmap = selectedImage,
                     contentDescription = "Last captured image",
                     modifier = Modifier
-                        .scale(getImageScaleConstraints(
-                            maxHeight = 200, maxWidth = 200
-                        ))
+                        .scale(getImageScaleConstraints())
                 )
             }
         }
@@ -206,14 +202,11 @@ fun EditExistingPhoto(
 }
 
 @Composable
-private fun getImageScaleConstraints(maxWidth: Int, maxHeight: Int): Float {
-    // Set the desired maximum size of the image
+private fun getImageScaleConstraints(): Float {
 
-    val maxWidthValue = LocalDensity.current.run { maxWidth.dp.toPx() }
+    val maxWidthValue = LocalDensity.current.run { 200.dp.toPx() }
+    val maxHeightValue = LocalDensity.current.run { 200.dp.toPx() }
 
-    val maxHeightValue = LocalDensity.current.run { maxHeight.dp.toPx() }
-
-    // Calculate the scale based on the constraints
     val scale = minOf(maxWidthValue / 200f, maxHeightValue / 200f)
 
     return if (scale < 1) scale else 1f

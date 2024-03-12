@@ -76,12 +76,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     val  isEditingExistingPhoto: MutableState<Boolean> = _isEditingExistingPhoto
 
+    private val _isViewingSub = mutableStateOf(false)
+    val isViewingSub: MutableState<Boolean> = _isViewingSub
+
     var imageUri by mutableStateOf<Uri?>(null)
 
     private val bitmap = mutableStateOf<Bitmap?>(null)
 
     var selectedImage by mutableStateOf<ImageBitmap?>(null)
 
+    fun updateIsViewingSubBool(newValue: Boolean){
+        _isViewingSub.value = newValue
+    }
 
     fun updateIsEditingExistingPhotoBool(newValue: Boolean) {
         _isEditingExistingPhoto.value = newValue

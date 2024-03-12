@@ -67,7 +67,6 @@ fun EditTakenPhoto(
                     CropResult.Cancelled -> {}
                     is CropError -> error = result
                     is CropResult.Success -> {
-
                         cameraViewModel.updateCapturedPhotoState(result.bitmap.asAndroidBitmap())
                         navController.navigate(Screens.ImagePreviewScreen.route)
                     }

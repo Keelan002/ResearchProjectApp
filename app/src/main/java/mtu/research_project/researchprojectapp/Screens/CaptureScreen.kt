@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,8 +24,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,6 +43,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +65,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomButton
+import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
@@ -99,46 +105,81 @@ fun CaptureScreenContent(
     val titles = appViewModel.listOfTitles
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
-    var isViewingSub by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var text by rememberSaveable { mutableStateOf("") }
+    var buttonClicked by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
+
+                modifier = Modifier
+                    .size(width = 411.dp, height = 64.dp),
+
                 title = {
-                    if(appViewModel.selectedCategory.value == null){
-                        isViewingSub = false
-                        CustomButton(
-                            onClick = { appViewModel.showAddCategoryDialog() },
-                            text = "Add Category +",
-                            modifier = Modifier
-                                .padding(start = 200.dp)
+                        CustomTextField(
+                            value = text,
+                            onValueChange = { text = it },
+                            placeholder = "Search"
                         )
-                    }else{
-                        isViewingSub = true
-                        CustomButton(
-                            onClick = { appViewModel.showAddSubCategoryDialog() },
-                            text = "Add Sub Category +",
-                            modifier = Modifier
-                                .padding(start = 200.dp)
-                        )
-                    }
-
-
                 },
+
+
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = secondaryColor),
 
                 navigationIcon = {
-                    if (isViewingSub){
+                    if (appViewModel.selectedCategory.value != null){
                         IconButton(
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                                .size(width = 48.dp, height = 48.dp),
                             onClick = {
                             appViewModel.setSelectedCategory(null)
                             }
                         ) {
                             Icon(
-                                Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black
+                                modifier = Modifier
+                                    .size( width = 24.dp, height = 24.dp ),
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back", tint = Color.Black
                             )
                         }
+                    }
+                },
+
+
+                actions = {
+                    Row {
+                        IconButton(
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                                .size(width = 48.dp, height = 48.dp),
+                            onClick = {
+                                if (!appViewModel.isViewingSub.value){
+                                    appViewModel.showAddCategoryDialog()
+                                }else{
+                                    appViewModel.showAddSubCategoryDialog()
+                                }
+                            }
+                        ){
+                            Icon(
+                                modifier = Modifier
+
+                                    .size( width = 24.dp, height = 24.dp ),
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "add category icon"
+                            )
+                        }
+
+                        if (appViewModel.isViewingSub.value){
+                            PickImageFromGallery(
+                                context = context,
+                                appViewModel = appViewModel,
+                                navHController = navHController,
+                                cameraViewModel = cameraViewModel
+                            )
+                        }
+
                     }
                 }
             )
@@ -159,7 +200,7 @@ fun CaptureScreenContent(
                         .padding(horizontal = 16.dp, vertical = 24.dp)
                 )
 
-                if(appViewModel.selectedCategory.value != null){
+                if(appViewModel.selectedCategory.value != null && buttonClicked){
                     PickImageFromGallery(
                         context = context,
                         appViewModel = appViewModel,
@@ -188,9 +229,6 @@ fun CaptureScreenContent(
     )
 }
 
-
-
-
 @Composable
 fun DisplayCategories(appViewModel: AppViewModel){
     LazyColumn{
@@ -201,6 +239,7 @@ fun DisplayCategories(appViewModel: AppViewModel){
                     .padding(start = 30.dp, end = 30.dp),
                 text = category.name,
                 onClick = {
+                    appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
                 },
@@ -272,8 +311,6 @@ fun PickImageFromGallery(
     cameraViewModel: CameraViewModel
 ) {
 
-
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -283,18 +320,34 @@ fun PickImageFromGallery(
         navHController.navigate(Screens.ImagePreviewScreen.route)
     }
 
-    FloatingActionButton(
-        onClick = { launcher.launch("image/*") },
-        modifier = Modifier
-            .size(400.dp, 50.dp)
-            .padding(start = 15.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
-        contentColor = Color.Black,
-        containerColor = secondaryColor
-    ) {
-        Text(text = "Pick an image ")
-    }
+    //FloatingActionButton(
+    //    onClick = { launcher.launch("image/*") },
+    //    modifier = Modifier
+    //        .size(400.dp, 50.dp)
+    //        .padding(start = 15.dp)
+    //        .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+    //    contentColor = Color.Black,
+    //    containerColor = secondaryColor
+    //) {
+    //    Text(text = "Pick an image ")
+    //}
 
+    IconButton(
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .size(width = 48.dp, height = 48.dp),
+        onClick = {
+            launcher.launch("image/*")
+        }
+    ) {
+        Icon(
+            modifier = Modifier
+
+                .size(width = 24.dp, height = 24.dp),
+            imageVector = Icons.Default.ArrowUpward,
+            contentDescription = "add category icon"
+        )
+    }
 }
 
 @Composable

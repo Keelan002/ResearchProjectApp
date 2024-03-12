@@ -1,10 +1,14 @@
 package mtu.research_project.researchprojectapp.Utils
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.IconButton
 import androidx.compose.material.SnackbarDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -46,14 +50,14 @@ fun CustomButton(
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String
+    placeholder: String,
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
+        placeholder = {
             Text(
-                text = label,
+                text = placeholder,
                 color = Color.Black
             )
         },
@@ -61,12 +65,11 @@ fun CustomTextField(
         singleLine = true,
         shape = RectangleShape,
         colors = TextFieldDefaults.textFieldColors(
-            cursorColor = Color.White,
-            containerColor = SnackbarDefaults.backgroundColor,
-            focusedIndicatorColor = secondaryColor,
-            unfocusedIndicatorColor = secondaryColor,
-            disabledIndicatorColor = Color.White,
+            cursorColor = Color.Black,
+            containerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Black,
+            unfocusedIndicatorColor = Color.Black,
+            disabledIndicatorColor = Color.Black,
         ),
     )
-
 }
