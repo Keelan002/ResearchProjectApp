@@ -120,7 +120,8 @@ fun CaptureScreenContent(
                         CustomTextField(
                             value = text,
                             onValueChange = { text = it },
-                            placeholder = "Search"
+                            placeholder = "Search",
+                            modifier = Modifier
                         )
                 },
 
@@ -266,37 +267,43 @@ fun DisplaySubCategories(appViewModel: AppViewModel) {
 }
 
 @Composable
-fun DisplayImages(titles: List<String>, appViewModel: AppViewModel, navHController: NavHostController) {
+fun DisplayImages(
+    titles: List<String>,
+    appViewModel: AppViewModel,
+    navHController: NavHostController
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize()
     )  {
         itemsIndexed(titles) { index, title ->
-            Column {
-                Text(
-                    text = title,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
-                val photo = appViewModel.selectedCategory.value?.photos?.getOrNull(index)
-                photo?.let {
-                    Image(
-                        bitmap = it.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+            if (appViewModel.selectedCategory.value != null) {
+                Column {
+                    Text(
+                        text = title,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
                         modifier = Modifier
-                            .clickable {
-                                appViewModel.updateIsEditingExistingPhotoBool(true)
-                                appViewModel.selectedImage = photo.asImageBitmap()
-                                navHController.navigate(Screens.ImagePreviewScreen.route)
-                            }
+                            .padding(8.dp)
                             .fillMaxWidth()
-                            .aspectRatio(1f)
-                            .padding(4.dp),
+                            .wrapContentWidth(Alignment.CenterHorizontally)
                     )
+                    val photo = appViewModel.selectedCategory.value?.photos?.getOrNull(index)
+                    photo?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .clickable {
+                                    appViewModel.updateIsEditingExistingPhotoBool(true)
+                                    appViewModel.selectedImage = photo.asImageBitmap()
+                                    navHController.navigate(Screens.ImagePreviewScreen.route)
+                                }
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .padding(4.dp),
+                        )
+                    }
                 }
             }
         }
@@ -319,19 +326,6 @@ fun PickImageFromGallery(
         cameraViewModel.updateCapturedPhotoState(bitmap)
         navHController.navigate(Screens.ImagePreviewScreen.route)
     }
-
-    //FloatingActionButton(
-    //    onClick = { launcher.launch("image/*") },
-    //    modifier = Modifier
-    //        .size(400.dp, 50.dp)
-    //        .padding(start = 15.dp)
-    //        .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
-    //    contentColor = Color.Black,
-    //    containerColor = secondaryColor
-    //) {
-    //    Text(text = "Pick an image ")
-    //}
-
     IconButton(
         modifier = Modifier
             .padding(top = 10.dp)

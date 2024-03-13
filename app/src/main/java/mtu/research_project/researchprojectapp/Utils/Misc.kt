@@ -1,12 +1,14 @@
 package mtu.research_project.researchprojectapp.Utils
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.IconButton
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -51,6 +53,7 @@ fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    modifier: Modifier
 ) {
     TextField(
         value = value,
@@ -71,5 +74,13 @@ fun CustomTextField(
             unfocusedIndicatorColor = Color.Black,
             disabledIndicatorColor = Color.Black,
         ),
+    )
+}
+
+@Composable
+fun BtnDivider(){
+    Divider(
+        color = Color.White,
+        modifier = Modifier.width(2.dp)
     )
 }
