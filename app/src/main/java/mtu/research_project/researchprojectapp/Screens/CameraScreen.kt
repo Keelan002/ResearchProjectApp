@@ -136,7 +136,7 @@ private fun CameraContent(
                         )
                         appViewModel.updateIsEditingExistingPhotoBool(false)
                         coroutineScope.launch {
-                            delay(5000) // 5000 milliseconds = 5 seconds
+                            delay(500) // 5000 milliseconds = 5 seconds
                             navController.navigate(Screens.ImagePreviewScreen.route)
                         }
                     }
