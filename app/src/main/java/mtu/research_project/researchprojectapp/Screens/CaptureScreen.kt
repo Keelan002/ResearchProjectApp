@@ -107,8 +107,7 @@ fun CaptureScreenContent(
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     val context = LocalContext.current
     var text by rememberSaveable { mutableStateOf("") }
-    var buttonClicked by remember { mutableStateOf(false) }
-
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -200,17 +199,6 @@ fun CaptureScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 24.dp)
                 )
-
-                if(appViewModel.selectedCategory.value != null && buttonClicked){
-                    PickImageFromGallery(
-                        context = context,
-                        appViewModel = appViewModel,
-                        navHController = navHController,
-                        cameraViewModel = cameraViewModel
-                       )
-                }
-
-
 
                 if (appViewModel.selectedCategory.value == null){
                     DisplayCategories(appViewModel)
