@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -67,14 +69,14 @@ fun ImagePreviewScreeContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .background(primaryColor)
+            .background(Color.Black)
     ){
         CustomTextField(
             value = imageTitle,
             onValueChange = { imageTitle = it },
             placeholder = "enter image title here",
+            icon = null,
             modifier = Modifier
-
         )
 
 
@@ -139,7 +141,7 @@ fun PreviewNewPhoto(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(secondaryColor)
+                .background(Color.Gray)
         ){
             PreviewImageBtns(
                 text = "Retake photo",
@@ -202,7 +204,7 @@ fun PreviewExistingPhoto(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(Color.Black)
         ){
             /*TO-DO fix bug where photo in not deletd internally*/
             PreviewImageBtns(
@@ -247,7 +249,7 @@ private fun getImageScaleConstraints(): Float {
 fun PreviewImageBtns(onClick: () -> Unit, text: String){
     Button(
         onClick = onClick ,
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
         modifier = Modifier
             .size(120.dp, 60.dp)
             .padding(start = 24.dp)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,10 +31,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -64,6 +68,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import mtu.research_project.researchprojectapp.Utils.CategoryBox
 import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
@@ -113,19 +118,19 @@ fun CaptureScreenContent(
             TopAppBar(
 
                 modifier = Modifier
-                    .size(width = 411.dp, height = 64.dp),
-
+                    .size(width = 411.dp, height = 50.dp),
                 title = {
-                        CustomTextField(
-                            value = text,
-                            onValueChange = { text = it },
-                            placeholder = "Search",
-                            modifier = Modifier
-                        )
+                    Text(
+                        fontSize = 30.sp,
+                        text = "APP NAME",
+                        color = Color.White,
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 10.dp)
+                    )
                 },
 
 
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = secondaryColor),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
 
                 navigationIcon = {
                     if (appViewModel.selectedCategory.value != null){
@@ -141,7 +146,7 @@ fun CaptureScreenContent(
                                 modifier = Modifier
                                     .size( width = 24.dp, height = 24.dp ),
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back", tint = Color.Black
+                                contentDescription = "Back", tint = Color.Cyan
                             )
                         }
                     }
@@ -167,7 +172,8 @@ fun CaptureScreenContent(
 
                                     .size( width = 24.dp, height = 24.dp ),
                                 imageVector = Icons.Default.Add,
-                                contentDescription = "add category icon"
+                                contentDescription = "add category icon",
+                                tint = Color.Cyan
                             )
                         }
 
@@ -189,15 +195,18 @@ fun CaptureScreenContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 48.dp)
-                    .background(primaryColor)
+                    .background(Color.Black)
             ) {
-                Text(
-                    text = "Please select a category",
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
+
+
+
+
+                CustomTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = "Search",
+                    icon = Icons.Default.Search,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp)
                 )
 
                 if (appViewModel.selectedCategory.value == null){
@@ -219,19 +228,23 @@ fun CaptureScreenContent(
 }
 
 @Composable
-fun DisplayCategories(appViewModel: AppViewModel){
-    LazyColumn{
-        items(appViewModel.categories){category ->
-            CustomButton(
+fun DisplayCategories(appViewModel: AppViewModel) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 0.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(appViewModel.categories) { category ->
+            CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 30.dp, end = 30.dp),
+                    .padding(vertical = 8.dp),
                 text = category.name,
                 onClick = {
                     appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                },
+                }
             )
         }
     }
@@ -269,6 +282,7 @@ fun DisplayImages(
                 Column {
                     Text(
                         text = title,
+                        color = Color.White,
                         style = TextStyle(fontWeight = FontWeight.Bold),
                         modifier = Modifier
                             .padding(8.dp)
@@ -324,10 +338,10 @@ fun PickImageFromGallery(
     ) {
         Icon(
             modifier = Modifier
-
                 .size(width = 24.dp, height = 24.dp),
             imageVector = Icons.Default.ArrowUpward,
-            contentDescription = "add category icon"
+            contentDescription = "add category icon",
+            tint = Color.Cyan
         )
     }
 }

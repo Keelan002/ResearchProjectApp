@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.navigation.NavController
 import mtu.research_project.researchprojectapp.ImageEdit.EditExistingImage
@@ -22,7 +23,7 @@ fun ImageEditorScreen(
 ){
     Column(
         modifier = Modifier
-            .background(primaryColor)
+            .background(Color.Black)
             .fillMaxSize()
     ) {
         ImageEditorScreenContent(appViewModel, navController, cameraViewModel)
