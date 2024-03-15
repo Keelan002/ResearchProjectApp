@@ -19,14 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -36,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -45,20 +41,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -66,10 +59,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CategoryBox
-import mtu.research_project.researchprojectapp.Utils.CustomButton
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
@@ -197,10 +188,6 @@ fun CaptureScreenContent(
                     .padding(top = 48.dp)
                     .background(Color.Black)
             ) {
-
-
-
-
                 CustomTextField(
                     value = text,
                     onValueChange = { text = it },
@@ -212,72 +199,42 @@ fun CaptureScreenContent(
                 if (appViewModel.selectedCategory.value == null){
                     DisplayCategories(appViewModel)
                 }else{
-                    DisplaySubCategories(appViewModel)
+                    DisplaySubCategoriesAndImages(
+                        appViewModel = appViewModel,
+                        titles = titles,
+                        navHController = navHController
+                    )
                 }
-
-                DisplayImages(titles, appViewModel, navHController)
-
             }
         },
-
         floatingActionButton = {
             CapturePhotoBtn(appViewModel = appViewModel, navHController = navHController)
         },
-
     )
 }
 
 @Composable
-fun DisplayCategories(appViewModel: AppViewModel) {
+fun DisplaySubCategoriesAndImages(
+    appViewModel: AppViewModel,
+    titles: List<String>,
+    navHController: NavHostController
+){
+    val selectedCategory = appViewModel.selectedCategory.value ?: return
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 0.dp),
         modifier = Modifier.fillMaxSize()
-    ) {
-        items(appViewModel.categories) { category ->
+    ){
+        items(selectedCategory.subCategories ?: emptyList()) { category ->
             CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 text = category.name,
-                onClick = {
-                    appViewModel.updateIsViewingSubBool(true)
-                    appViewModel.setSelectedCategory(category)
-                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun DisplaySubCategories(appViewModel: AppViewModel) {
-    val selectedCategory = appViewModel.selectedCategory.value ?: return
-
-    LazyColumn {
-        items(selectedCategory.subCategories ?: emptyList()) { category ->
-            CustomButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 30.dp, end = 30.dp),
-                text = category.name,
                 onClick = { appViewModel.setSelectedCategory(category) },
             )
         }
-    }
-}
-
-@Composable
-fun DisplayImages(
-    titles: List<String>,
-    appViewModel: AppViewModel,
-    navHController: NavHostController
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize()
-    )  {
-        itemsIndexed(titles) { index, title ->
+        itemsIndexed(titles){ index, title ->
             if (appViewModel.selectedCategory.value != null) {
                 Column {
                     Text(
@@ -308,6 +265,29 @@ fun DisplayImages(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun DisplayCategories(appViewModel: AppViewModel) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 0.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(appViewModel.categories) { category ->
+            CategoryBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                text = category.name,
+                onClick = {
+                    appViewModel.updateIsViewingSubBool(true)
+                    appViewModel.setSelectedCategory(category)
+                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
+                }
+            )
         }
     }
 }
