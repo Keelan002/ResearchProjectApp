@@ -220,5 +220,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+    fun countSubCategoriesAndImages(category: Category): Int {
+        var count = 0
+
+        // Count subcategories
+        count += category.subCategories?.size!!
+
+        // Count images
+        count += category.photos?.size!!
+
+        // Recursively count subcategories and images in each subcategory
+        for (subCategory in category.subCategories) {
+            count += countSubCategoriesAndImages(subCategory)
+        }
+
+        return count
+    }
+
 }
 

@@ -155,7 +155,6 @@ fun CaptureScreenContent(
                                     appViewModel.showAddCategoryDialog()
                                 }else{
                                     navHController.navigate(Screens.AddSubScreen.route)
-                                    //appViewModel.showAddSubCategoryDialog()
                                 }
                             }
                         ){
@@ -232,6 +231,7 @@ fun DisplaySubCategoriesAndImages(
                     .padding(vertical = 8.dp),
                 text = category.name,
                 onClick = { appViewModel.setSelectedCategory(category) },
+                fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
 
@@ -282,7 +282,8 @@ fun DisplayCategories(appViewModel: AppViewModel) {
                     appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                }
+                },
+                fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
     }

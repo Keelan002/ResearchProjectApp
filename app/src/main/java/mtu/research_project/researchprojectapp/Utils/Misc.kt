@@ -117,7 +117,7 @@ fun CustomTextField(
 }
 
 @Composable
-fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier){
+fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier, fileCount: Int){
 
     Box (
         modifier = Modifier
@@ -145,7 +145,7 @@ fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier){
                 fontSize = 30.sp
             )
             Text(
-                text = "items 0",
+                text = "items $fileCount",
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
