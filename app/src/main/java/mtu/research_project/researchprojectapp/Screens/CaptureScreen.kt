@@ -160,7 +160,6 @@ fun CaptureScreenContent(
                         ){
                             Icon(
                                 modifier = Modifier
-
                                     .size( width = 24.dp, height = 24.dp ),
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "add category icon",
@@ -176,7 +175,6 @@ fun CaptureScreenContent(
                                 cameraViewModel = cameraViewModel
                             )
                         }
-
                     }
                 }
             )
@@ -201,7 +199,7 @@ fun CaptureScreenContent(
                 }else{
                     DisplaySubCategoriesAndImages(
                         appViewModel = appViewModel,
-                        titles = titles,
+                        //titles = titles,
                         navHController = navHController
                     )
                 }
@@ -213,7 +211,7 @@ fun CaptureScreenContent(
     )
 }
 
-@Composable
+/*@Composable
 fun DisplaySubCategoriesAndImages(
     appViewModel: AppViewModel,
     titles: List<String>,
@@ -249,13 +247,13 @@ fun DisplaySubCategoriesAndImages(
                     val photo = appViewModel.selectedCategory.value?.photos?.getOrNull(index)
                     photo?.let {
                         Image(
-                            bitmap = it.asImageBitmap(),
+                            bitmap = it.image.asImageBitmap(),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .clickable {
                                     appViewModel.updateIsEditingExistingPhotoBool(true)
-                                    appViewModel.selectedImage = photo.asImageBitmap()
+                                    appViewModel.selectedImage = photo
                                     navHController.navigate(Screens.ImagePreviewScreen.route)
                                 }
                                 .fillMaxWidth()
@@ -264,6 +262,58 @@ fun DisplaySubCategoriesAndImages(
                         )
                     }
                 }
+            }
+        }
+    }
+}*/
+
+@Composable
+fun DisplaySubCategoriesAndImages(
+    appViewModel: AppViewModel,
+    navHController: NavHostController
+) {
+    val selectedCategory = appViewModel.selectedCategory.value ?: return
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 0.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(selectedCategory.subCategories ?: emptyList()) { category ->
+            CategoryBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                text = category.name,
+                onClick = { appViewModel.setSelectedCategory(category) },
+            )
+        }
+
+        items(selectedCategory.photos ?: emptyList()) { photo ->
+            Column {
+                Text(
+                    text = photo.imageTitle,
+                    color = Color.White,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+                Image(
+                    bitmap = photo.image.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .clickable {
+                            appViewModel.updateIsEditingExistingPhotoBool(true)
+                            appViewModel.selectedImage = photo
+                            navHController.navigate(Screens.ImagePreviewScreen.route)
+                        }
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(4.dp)
+                )
             }
         }
     }

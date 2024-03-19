@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.Theme.primaryColor
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
@@ -165,7 +166,7 @@ fun PreviewNewPhoto(
                 onClick = {
                     if (imageTitle.isNotBlank()){
                         appViewModel.addTitleToList(imageTitle)
-                        cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it) }
+                        cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it, imageTitle) }
                         navHController.navigate(Screens.CaptureScreen.route)
                     }
                 }
@@ -178,7 +179,7 @@ fun PreviewNewPhoto(
 fun PreviewExistingPhoto(
     appViewModel: AppViewModel,
     navHController: NavHostController,
-    selectedImage: ImageBitmap,
+    selectedImage: CategoryImage,
     imageTitle: String
 ) {
     Column(
@@ -193,7 +194,7 @@ fun PreviewExistingPhoto(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    bitmap = selectedImage,
+                    bitmap = selectedImage.image.asImageBitmap(),
                     contentDescription = "Last captured image",
                     modifier = Modifier
                         .scale(getImageScaleConstraints())
@@ -210,7 +211,7 @@ fun PreviewExistingPhoto(
             PreviewImageBtns(
                 text = "Delete photo",
                 onClick = {
-                    appViewModel.removePhotoAndTitle(selectedImage.asAndroidBitmap())
+                    appViewModel.removePhotoAndTitle(selectedImage)
                     navHController.navigate(Screens.CaptureScreen.route)
                 }
             )
@@ -226,6 +227,8 @@ fun PreviewExistingPhoto(
                 text = "Submit",
                 onClick = {
                     if (imageTitle.isNotBlank()) {
+                        val newImage = appViewModel.setCategoryImageName(selectedImage, imageTitle)
+                        appViewModel.replacePhotoInCategory(selectedImage, newImage)
                         navHController.navigate(Screens.CaptureScreen.route)
                     }
                 }

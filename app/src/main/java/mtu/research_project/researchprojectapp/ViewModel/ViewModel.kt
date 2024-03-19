@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -16,8 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +24,7 @@ import com.mr0xf00.easycrop.ui.ImageCropperDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
+import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
@@ -83,7 +81,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val bitmap = mutableStateOf<Bitmap?>(null)
 
-    var selectedImage by mutableStateOf<ImageBitmap?>(null)
+    var selectedImage by mutableStateOf<CategoryImage?>(null)
+
+    fun setCategoryImageName(image: CategoryImage, newTitle: String): CategoryImage {
+        return image.copy(imageTitle = newTitle)
+    }
 
     fun updateIsViewingSubBool(newValue: Boolean){
         _isViewingSub.value = newValue
@@ -107,25 +109,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _categories.value = _categories.value + category
     }
 
-    fun addPhotoToCategory(bitmap: Bitmap) {
+    fun addPhotoToCategory(bitmap: Bitmap, title: String) {
+
+        val imageToAdd = CategoryImage(bitmap, title)
         val category = selectedCategory.value
         if (category != null) {
-            category.photos?.add(bitmap)
+            category.photos?.add(imageToAdd)
             Log.d("PHOTOS IN CATEGORY", "${category.photos}")
-        }
-    }
-
-    fun addPhotoFromGallery(context: Context){
-        if (imageUri != null) {
-            bitmap.value = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val src = ImageDecoder.createSource(context.contentResolver, imageUri!!)
-                ImageDecoder.decodeBitmap(src)
-            } else {
-                MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-            }
-            bitmap.value?.let { bitmap ->
-                addPhotoToCategory(bitmap)
-            }
         }
     }
 
@@ -136,21 +126,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun replacePhotoInCategory(oldImage: Bitmap, newImage: Bitmap) {
+    fun replacePhotoInCategory(oldImage: CategoryImage, newImage: CategoryImage) {
         val category = selectedCategory.value
         if (category != null) {
             val photos = category.photos
             if (photos != null) {
                 val index = photos.indexOf(oldImage)
                 if (index != -1) {
-                    // Replace the old image with the new one
                     photos[index] = newImage
                 }
             }
         }
     }
 
-    fun removePhotoAndTitle(selectedPhoto: Bitmap) {
+    fun removePhotoAndTitle(selectedPhoto: CategoryImage) {
         val category = selectedCategory.value
         if (category != null) {
             val index = category.photos?.indexOf(selectedPhoto)
