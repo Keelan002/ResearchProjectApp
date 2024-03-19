@@ -80,7 +80,7 @@ fun CaptureScreen(
     }
 
     appViewModel.RunAddCategoryDialog()
-    appViewModel.RunAddSubCategoryDialog(appViewModel)
+    //appViewModel.RunAddSubCategoryDialog()
 
 }
 
@@ -154,7 +154,8 @@ fun CaptureScreenContent(
                                 if (!appViewModel.isViewingSub.value){
                                     appViewModel.showAddCategoryDialog()
                                 }else{
-                                    appViewModel.showAddSubCategoryDialog()
+                                    navHController.navigate(Screens.AddSubScreen.route)
+                                    //appViewModel.showAddSubCategoryDialog()
                                 }
                             }
                         ){
@@ -195,11 +196,11 @@ fun CaptureScreenContent(
                 )
 
                 if (appViewModel.selectedCategory.value == null){
+                    Log.d("TEST", "RUNNING")
                     DisplayCategories(appViewModel)
                 }else{
                     DisplaySubCategoriesAndImages(
                         appViewModel = appViewModel,
-                        //titles = titles,
                         navHController = navHController
                     )
                 }
@@ -211,61 +212,6 @@ fun CaptureScreenContent(
     )
 }
 
-/*@Composable
-fun DisplaySubCategoriesAndImages(
-    appViewModel: AppViewModel,
-    titles: List<String>,
-    navHController: NavHostController
-){
-    val selectedCategory = appViewModel.selectedCategory.value ?: return
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(horizontal = 0.dp),
-        modifier = Modifier.fillMaxSize()
-    ){
-        items(selectedCategory.subCategories ?: emptyList()) { category ->
-            CategoryBox(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                text = category.name,
-                onClick = { appViewModel.setSelectedCategory(category) },
-            )
-        }
-        itemsIndexed(titles){ index, title ->
-            if (appViewModel.selectedCategory.value != null) {
-                Column {
-                    Text(
-                        text = title,
-                        color = Color.White,
-                        style = TextStyle(fontWeight = FontWeight.Bold),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally)
-                    )
-                    val photo = appViewModel.selectedCategory.value?.photos?.getOrNull(index)
-                    photo?.let {
-                        Image(
-                            bitmap = it.image.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .clickable {
-                                    appViewModel.updateIsEditingExistingPhotoBool(true)
-                                    appViewModel.selectedImage = photo
-                                    navHController.navigate(Screens.ImagePreviewScreen.route)
-                                }
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .padding(4.dp),
-                        )
-                    }
-                }
-            }
-        }
-    }
-}*/
 
 @Composable
 fun DisplaySubCategoriesAndImages(

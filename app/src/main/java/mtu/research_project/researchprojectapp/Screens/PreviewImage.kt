@@ -6,17 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
-import mtu.research_project.researchprojectapp.Theme.primaryColor
-import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
+import mtu.research_project.researchprojectapp.Utils.PreviewImageBtns
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
@@ -99,7 +88,7 @@ fun ImagePreviewScreeContent(
                     appViewModel = appViewModel,
                     navHController = navHController,
                     selectedImage = selectedImage,
-                    imageTitle = imageTitle
+                    imageTitle = imageTitle,
                 )
             }
         }
@@ -180,7 +169,7 @@ fun PreviewExistingPhoto(
     appViewModel: AppViewModel,
     navHController: NavHostController,
     selectedImage: CategoryImage,
-    imageTitle: String
+    imageTitle: String,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -247,27 +236,3 @@ private fun getImageScaleConstraints(): Float {
 
     return if (scale < 1) scale else 1f
 }
-
-@Composable
-fun PreviewImageBtns(onClick: () -> Unit, text: String){
-    Button(
-        onClick = onClick ,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-        modifier = Modifier
-            .size(120.dp, 60.dp)
-            .padding(start = 24.dp)
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = Color.Black,
-            modifier = Modifier
-                .weight(1f)
-        )
-    }
-
-    Spacer(modifier = Modifier.width(16.dp))
-    
-}
-
-

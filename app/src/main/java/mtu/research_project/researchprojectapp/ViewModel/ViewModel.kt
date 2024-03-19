@@ -19,6 +19,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import com.mr0xf00.easycrop.CropState
 import com.mr0xf00.easycrop.ui.ImageCropperDialog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.CameraX.CameraState
+import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
 import org.koin.android.annotation.KoinViewModel
@@ -115,12 +117,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val category = selectedCategory.value
         if (category != null) {
             category.photos?.add(imageToAdd)
-            Log.d("PHOTOS IN CATEGORY", "${category.photos}")
         }
     }
 
     private fun addSubCategoryToCategory(subCategory: Category){
         val category = selectedCategory.value
+
         if (category != null){
             category.subCategories?.add(subCategory)
         }
@@ -190,25 +192,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 onAddCategory = { category ->
                     createCategory(category)
                     hideAddCategoryDialog()
-                    Log.d("LISTED CATEGORIES", "$categories")
                 }
             )
         }
     }
 
     @Composable
-    fun RunAddSubCategoryDialog(appViewModel: AppViewModel) {
-        if (uiState.showAddSubCategoryDialog) {
-            AddSubCategoryDialog(
-                onDismiss = { hideAddSubCategoryDialog() },
-                onAddCategory = { category ->
-                    addSubCategoryToCategory(category)
-                    hideAddSubCategoryDialog()
-                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
-                    Log.d("SELECTED CATEGORY SUBS", "${appViewModel.selectedCategory.value!!.subCategories}")
-                },
-            )
-        }
+    fun RunAddSubCategoryDialog(navHostController: NavHostController) {
+        AddSubCategoryDialog(
+            onDismiss = { hideAddSubCategoryDialog() },
+            onAddCategory = { category ->
+                addSubCategoryToCategory(category)
+                hideAddSubCategoryDialog()
+                navHostController.navigate(Screens.CaptureScreen.route)
+            },
+            appViewModel = this
+        )
     }
 
     @Composable

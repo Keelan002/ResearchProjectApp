@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import mtu.research_project.researchprojectapp.Screens.AddSubScreen
 import mtu.research_project.researchprojectapp.Screens.CameraScreen
 import mtu.research_project.researchprojectapp.Screens.CaptureScreen
 import mtu.research_project.researchprojectapp.Screens.CheckPermissionScreen
@@ -36,16 +37,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         appViewModel = ViewModelProvider(this).get(AppViewModel::class.java)
         setContent {
-            Surface (
+            Surface(
                 modifier = Modifier.fillMaxSize(),
-            ){
+            ) {
                 DemoApp(cameraViewModel)
             }
         }
     }
 
     @Composable
-    fun DemoApp(cameraViewModel: CameraViewModel){
+    fun DemoApp(cameraViewModel: CameraViewModel) {
         val navController = rememberNavController()
         Scaffold { innerPadding ->
             NavHost(
@@ -80,11 +81,14 @@ class MainActivity : AppCompatActivity() {
             composable(route = Screens.MainCameraScreen.route) {
                 CheckPermissionScreen(cameraViewModel, appViewModel, navController)
             }
-            composable(route = Screens.ImageEditorScreen.route){
+            composable(route = Screens.ImageEditorScreen.route) {
                 ImageEditorScreen(appViewModel, navController, cameraViewModel)
             }
-            composable(route = Screens.ImagePreviewScreen.route){
+            composable(route = Screens.ImagePreviewScreen.route) {
                 ImagePreviewScreen(appViewModel, cameraViewModel, navController)
+            }
+            composable(route = Screens.AddSubScreen.route) {
+                AddSubScreen(appViewModel = appViewModel, navHostController = navController)
             }
         }
     }

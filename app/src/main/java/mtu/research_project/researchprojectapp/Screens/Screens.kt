@@ -8,4 +8,5 @@ sealed class Screens (val route: String){
     object CheckPermissionScreen: Screens("check_permission_screen")
     object ImageEditorScreen: Screens("image_editor_screen")
     object ImagePreviewScreen: Screens("image_preview_screen")
+    object AddSubScreen: Screens("add_sub_screen")
 }
