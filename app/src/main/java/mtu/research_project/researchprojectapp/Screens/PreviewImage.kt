@@ -154,7 +154,6 @@ fun PreviewNewPhoto(
                 text = "Submit",
                 onClick = {
                     if (imageTitle.isNotBlank()){
-                        appViewModel.addTitleToList(imageTitle)
                         cameraViewModel.state.value.capturedImage?.let { appViewModel.addPhotoToCategory(it, imageTitle) }
                         navHController.navigate(Screens.CaptureScreen.route)
                     }

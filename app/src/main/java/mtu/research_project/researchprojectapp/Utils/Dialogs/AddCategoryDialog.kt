@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.AppModel.Category
@@ -28,6 +29,7 @@ import mtu.research_project.researchprojectapp.AppModel.Category
 @Composable
 fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) {
     var categoryName by rememberSaveable { mutableStateOf("") }
+    var submitWithNoName by mutableStateOf(false)
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Column(
@@ -36,7 +38,11 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) 
                 .border(1.dp, Color.White, RoundedCornerShape(8.dp))
         ) {
 
-            Text(text = "Add new category")
+            Text(
+                text = "Add new category",
+                modifier = Modifier
+                    .padding(12.dp)
+            )
 
 
             TextField(
@@ -48,26 +54,22 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) 
                     .padding(12.dp)
             )
 
+            if (submitWithNoName){
+                Text(
+                    text = "Please enter a name",
+                    modifier = Modifier
+                        .padding(start = 12.dp),
+                    fontSize = 20.sp
+                )
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.End
+                    .padding(top = 16.dp, start = 10.dp, end = 10.dp, bottom = 5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Button(
-                    onClick = {
-                              if (categoryName.isNotBlank()){
-                                  val newCategory = Category(categoryName)
-                                  onAddCategory(newCategory)
-                              }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF101430),
-                        contentColor = Color(0xFF00B6CB)
-                    )
-                ){
-                    Text(text = "Add+")
-                }
+
 
                 Button(
                     onClick = onDismiss,
@@ -77,6 +79,23 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) 
                     )
                 ) {
                     Text(text = "Cancel")
+                }
+
+                Button(
+                    onClick = {
+                        if (categoryName.isNotBlank()){
+                            val newCategory = Category(categoryName)
+                            onAddCategory(newCategory)
+                        }else{
+                            submitWithNoName = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF101430),
+                        contentColor = Color(0xFF00B6CB)
+                    )
+                ){
+                    Text(text = "Add+")
                 }
             }
         }

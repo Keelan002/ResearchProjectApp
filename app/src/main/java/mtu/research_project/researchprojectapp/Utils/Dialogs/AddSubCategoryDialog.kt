@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
@@ -29,6 +30,7 @@ import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 @Composable
 fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit, appViewModel: AppViewModel) {
     var subCategoryName by rememberSaveable { mutableStateOf("") }
+    var submitWithNoName by mutableStateOf(false)
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Column(
@@ -37,7 +39,11 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Uni
                 .border(1.dp, Color.White, RoundedCornerShape(8.dp))
         ) {
 
-            Text(text = "Add new sub-category")
+            Text(
+                text = "Add new sub-category",
+                modifier = Modifier
+                    .padding(12.dp)
+            )
 
 
             TextField(
@@ -49,27 +55,22 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Uni
                     .padding(12.dp)
             )
 
+            if (submitWithNoName){
+                Text(
+                    text = "Please enter a name",
+                    modifier = Modifier
+                        .padding(start = 12.dp),
+                    fontSize = 20.sp
+                )
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.End
+                    .padding(top = 16.dp, start = 10.dp, end = 10.dp, bottom = 5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Button(
-                    onClick = {
-                        if (subCategoryName.isNotBlank()){
-                            val newSubCategory = Category(subCategoryName)
-                            onAddCategory(newSubCategory)
-                            Log.d("SELECTED CATE", "${appViewModel.selectedCategory.value}")
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF101430),
-                        contentColor = Color(0xFF00B6CB)
-                    )
-                ){
-                    Text(text = "Add+")
-                }
+
 
                 Button(
                     onClick = onDismiss,
@@ -79,6 +80,23 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Uni
                     )
                 ) {
                     Text(text = "Cancel")
+                }
+
+                Button(
+                    onClick = {
+                        if (subCategoryName.isNotBlank()){
+                            val newSubCategory = Category(subCategoryName)
+                            onAddCategory(newSubCategory)
+                        }else{
+                            submitWithNoName = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF101430),
+                        contentColor = Color(0xFF00B6CB)
+                    )
+                ){
+                    Text(text = "Add+")
                 }
             }
         }

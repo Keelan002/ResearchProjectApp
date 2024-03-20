@@ -83,14 +83,14 @@ fun CustomTextField(
     TextField(
         modifier = Modifier
             .fillMaxWidth()
-            .size(height = 56.dp, width = 360.dp)
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+            .size(height = 56.dp, width = 360.dp),
         value = value,
         onValueChange = onValueChange,
         placeholder = {
             Text(
                 text = placeholder,
-                color = Color.Gray
+                color = Color.Black
             )
         },
         textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),

@@ -98,7 +98,6 @@ fun CaptureScreenContent(
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
 
-    val titles = appViewModel.listOfTitles
     val selectedCategory by appViewModel.selectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     val context = LocalContext.current

@@ -69,9 +69,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
 
-    private val _listOfTitles: MutableState<List<String>> = mutableStateOf(emptyList())
-    val listOfTitles: List<String> get() = _listOfTitles.value
-
     private val _isEditingExistingPhoto = mutableStateOf(false)
 
     val  isEditingExistingPhoto: MutableState<Boolean> = _isEditingExistingPhoto
@@ -96,11 +93,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun updateIsEditingExistingPhotoBool(newValue: Boolean) {
         _isEditingExistingPhoto.value = newValue
     }
-
-    fun addTitleToList(title: String){
-        _listOfTitles.value = _listOfTitles.value + title
-    }
-
 
     fun setSelectedCategory(category: Category?) {
         _selectedCategory.value = category
@@ -150,9 +142,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 updatedPhotos.removeAt(index)
                 _selectedCategory.value = category.copy(photos = updatedPhotos)
 
-                val updatedTitles = _listOfTitles.value.toMutableList()
-                updatedTitles.removeAt(index)
-                _listOfTitles.value = updatedTitles
             }
         }
     }
@@ -223,13 +212,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun countSubCategoriesAndImages(category: Category): Int {
         var count = 0
 
-        // Count subcategories
         count += category.subCategories?.size!!
 
-        // Count images
         count += category.photos?.size!!
 
-        // Recursively count subcategories and images in each subcategory
         for (subCategory in category.subCategories) {
             count += countSubCategoriesAndImages(subCategory)
         }
