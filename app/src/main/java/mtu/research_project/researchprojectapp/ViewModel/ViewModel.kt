@@ -76,10 +76,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _isViewingSub = mutableStateOf(false)
     val isViewingSub: MutableState<Boolean> = _isViewingSub
 
-    var imageUri by mutableStateOf<Uri?>(null)
-
-    private val bitmap = mutableStateOf<Bitmap?>(null)
-
     var selectedImage by mutableStateOf<CategoryImage?>(null)
 
     fun setCategoryImageName(image: CategoryImage, newTitle: String): CategoryImage {

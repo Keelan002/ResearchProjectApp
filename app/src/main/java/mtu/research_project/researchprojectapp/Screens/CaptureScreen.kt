@@ -110,13 +110,15 @@ fun CaptureScreenContent(
                 modifier = Modifier
                     .size(width = 411.dp, height = 50.dp),
                 title = {
-                    Text(
-                        fontSize = 30.sp,
-                        text = "APP NAME",
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(start = 20.dp, top = 10.dp)
-                    )
+                    (if (!appViewModel.isViewingSub.value) "APP NAME" else appViewModel.selectedCategory.value?.name)?.let {
+                        Text(
+                            fontSize = 30.sp,
+                            text = it,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(start = 20.dp, top = 10.dp)
+                        )
+                    }
                 },
 
 
