@@ -133,9 +133,12 @@ fun CaptureScreenContent(
                                 .padding(top = 10.dp)
                                 .size(width = 48.dp, height = 48.dp),
                             onClick = {
-                            appViewModel.removeLastCategory()
-                                Log.d("TOP LVL CATE", "${appViewModel.topLvlCategories}")
-                                Log.d("AppViewModel", "Categories: ${appViewModel.categories.joinToString()}")
+                                appViewModel.removeLastCategory()
+                                val lastCategory = appViewModel.getLastCategory()
+                                if (lastCategory != null) {
+                                appViewModel.setSelectedCategory(lastCategory)
+                                }
+                                Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                             }
                         ) {
                             Icon(
@@ -237,7 +240,7 @@ fun DisplaySubCategoriesAndImages(
                 onClick = {
                     appViewModel.setSelectedCategory(category)
                     appViewModel.addCategory(category)
-                    Log.d("AppViewModel", "Categories: ${appViewModel.categories}")
+                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                           },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
@@ -290,7 +293,7 @@ fun DisplayCategories(appViewModel: AppViewModel) {
                     appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
                     appViewModel.addCategory(category)
-                    Log.d("AppViewModel", "Categories: ${appViewModel.categories}")
+                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
@@ -313,7 +316,6 @@ fun PickImageFromGallery(
             appViewModel.updateIsEditingExistingPhotoBool(false)
             val bitmap = uri.let { appViewModel.loadImageFromUriAsBitmap(context, it) }
             cameraViewModel.updateCapturedPhotoState(bitmap)
-            Log.d("URI", "$uri")
             navHController.navigate(Screens.ImagePreviewScreen.route)
         }
     }

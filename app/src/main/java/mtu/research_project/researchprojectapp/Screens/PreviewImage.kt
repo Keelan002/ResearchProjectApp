@@ -195,7 +195,6 @@ fun PreviewExistingPhoto(
                 .fillMaxWidth()
                 .background(Color.Black)
         ){
-            /*TO-DO fix bug where photo in not deletd internally*/
             PreviewImageBtns(
                 text = "Delete photo",
                 onClick = {
