@@ -4,17 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -63,8 +59,11 @@ var uiState by mutableStateOf(UiState())
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _selectedCategory = MutableLiveData<Category?>()
-    var selectedCategory: LiveData<Category?> = _selectedCategory
+    private val _currentSelectedCategory = MutableLiveData<Category?>()
+    var currentSelectedCategory: LiveData<Category?> = _currentSelectedCategory
+
+    private val _topLvlCategories: MutableState<List<Category>> = mutableStateOf(emptyList())
+    val topLvlCategories: List<Category> get() = _topLvlCategories.value
 
     private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories.value
@@ -77,6 +76,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val isViewingSub: MutableState<Boolean> = _isViewingSub
 
     var selectedImage by mutableStateOf<CategoryImage?>(null)
+
+    fun addCategory(category: Category) {
+        _categories.value += category
+    }
+
+    fun removeLastCategory() {
+        if (_categories.value.isNotEmpty()) {
+            _categories.value = _categories.value.dropLast(1)
+        }
+    }
+
+    fun getLastCategory(): Category? {
+        return categories.lastOrNull()
+    }
 
     fun setCategoryImageName(image: CategoryImage, newTitle: String): CategoryImage {
         return image.copy(imageTitle = newTitle)
@@ -91,25 +104,26 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setSelectedCategory(category: Category?) {
-        _selectedCategory.value = category
+        _currentSelectedCategory.value = category
     }
 
 
     private fun createCategory(category: Category) {
-        _categories.value = _categories.value + category
+        _topLvlCategories.value = _topLvlCategories.value + category
+        Log.d("TOP LVL CATE", "$topLvlCategories")
     }
 
     fun addPhotoToCategory(bitmap: Bitmap, title: String) {
 
         val imageToAdd = CategoryImage(bitmap, title)
-        val category = selectedCategory.value
+        val category = currentSelectedCategory.value
         if (category != null) {
             category.photos?.add(imageToAdd)
         }
     }
 
     private fun addSubCategoryToCategory(subCategory: Category){
-        val category = selectedCategory.value
+        val category = currentSelectedCategory.value
 
         if (category != null){
             category.subCategories?.add(subCategory)
@@ -117,7 +131,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun replacePhotoInCategory(oldImage: CategoryImage, newImage: CategoryImage) {
-        val category = selectedCategory.value
+        val category = currentSelectedCategory.value
         if (category != null) {
             val photos = category.photos
             if (photos != null) {
@@ -130,13 +144,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun removePhotoAndTitle(selectedPhoto: CategoryImage) {
-        val category = selectedCategory.value
+        val category = currentSelectedCategory.value
         if (category != null) {
             val index = category.photos?.indexOf(selectedPhoto)
             if (index != null && index != -1) {
                 val updatedPhotos = category.photos.toMutableList()
                 updatedPhotos.removeAt(index)
-                _selectedCategory.value = category.copy(photos = updatedPhotos)
+                _currentSelectedCategory.value = category.copy(photos = updatedPhotos)
 
             }
         }
@@ -177,6 +191,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 onAddCategory = { category ->
                     createCategory(category)
                     hideAddCategoryDialog()
+                    Log.d("AppViewModel", "Categories: $categories")
                 }
             )
         }
@@ -190,6 +205,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 addSubCategoryToCategory(category)
                 hideAddSubCategoryDialog()
                 navHostController.navigate(Screens.CaptureScreen.route)
+                Log.d("AppViewModel", "Categories: $categories")
             },
             appViewModel = this
         )

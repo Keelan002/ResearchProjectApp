@@ -22,8 +22,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -98,7 +98,7 @@ fun CaptureScreenContent(
     val permissionState = cameraPermissionState.status.isGranted
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
 
-    val selectedCategory by appViewModel.selectedCategory.observeAsState()
+    val selectedCategory by appViewModel.currentSelectedCategory.observeAsState()
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     val context = LocalContext.current
     var text by rememberSaveable { mutableStateOf("") }
@@ -110,7 +110,8 @@ fun CaptureScreenContent(
                 modifier = Modifier
                     .size(width = 411.dp, height = 50.dp),
                 title = {
-                    (if (!appViewModel.isViewingSub.value) "APP NAME" else appViewModel.selectedCategory.value?.name)?.let {
+
+                    (if (!appViewModel.isViewingSub.value) "APP NAME" else appViewModel.getLastCategory()?.name)?.let {
                         Text(
                             fontSize = 30.sp,
                             text = it,
@@ -119,19 +120,22 @@ fun CaptureScreenContent(
                                 .padding(start = 20.dp, top = 10.dp)
                         )
                     }
+
                 },
 
 
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
 
                 navigationIcon = {
-                    if (appViewModel.selectedCategory.value != null){
+                    if (appViewModel.currentSelectedCategory.value != null){
                         IconButton(
                             modifier = Modifier
                                 .padding(top = 10.dp)
                                 .size(width = 48.dp, height = 48.dp),
                             onClick = {
-                            appViewModel.setSelectedCategory(null)
+                            appViewModel.removeLastCategory()
+                                Log.d("TOP LVL CATE", "${appViewModel.topLvlCategories}")
+                                Log.d("AppViewModel", "Categories: ${appViewModel.categories.joinToString()}")
                             }
                         ) {
                             Icon(
@@ -195,8 +199,7 @@ fun CaptureScreenContent(
                     modifier = Modifier
                 )
 
-                if (appViewModel.selectedCategory.value == null){
-                    Log.d("TEST", "RUNNING")
+                if (appViewModel.currentSelectedCategory.value == null || appViewModel.categories.isEmpty()){
                     DisplayCategories(appViewModel)
                 }else{
                     DisplaySubCategoriesAndImages(
@@ -218,25 +221,29 @@ fun DisplaySubCategoriesAndImages(
     appViewModel: AppViewModel,
     navHController: NavHostController
 ) {
-    val selectedCategory = appViewModel.selectedCategory.value ?: return
+    val selectedCategory = appViewModel.getLastCategory()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 0.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(selectedCategory.subCategories ?: emptyList()) { category ->
+        items(selectedCategory?.subCategories ?: emptyList()) { category ->
             CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 text = category.name,
-                onClick = { appViewModel.setSelectedCategory(category) },
+                onClick = {
+                    appViewModel.setSelectedCategory(category)
+                    appViewModel.addCategory(category)
+                    Log.d("AppViewModel", "Categories: ${appViewModel.categories}")
+                          },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
 
-        items(selectedCategory.photos ?: emptyList()) { photo ->
+        items(selectedCategory?.photos ?: emptyList()) { photo ->
             Column {
                 Text(
                     text = photo.imageTitle,
@@ -273,7 +280,7 @@ fun DisplayCategories(appViewModel: AppViewModel) {
         contentPadding = PaddingValues(horizontal = 0.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(appViewModel.categories) { category ->
+        items(appViewModel.topLvlCategories) { category ->
             CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -282,7 +289,8 @@ fun DisplayCategories(appViewModel: AppViewModel) {
                 onClick = {
                     appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
-                    Log.d("SELECTED CATEGORY", "${appViewModel.selectedCategory.value}")
+                    appViewModel.addCategory(category)
+                    Log.d("AppViewModel", "Categories: ${appViewModel.categories}")
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
@@ -301,10 +309,13 @@ fun PickImageFromGallery(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        appViewModel.updateIsEditingExistingPhotoBool(false)
-        val bitmap = uri?.let { appViewModel.loadImageFromUriAsBitmap(context, it) }
-        cameraViewModel.updateCapturedPhotoState(bitmap)
-        navHController.navigate(Screens.ImagePreviewScreen.route)
+        if (uri != null){
+            appViewModel.updateIsEditingExistingPhotoBool(false)
+            val bitmap = uri.let { appViewModel.loadImageFromUriAsBitmap(context, it) }
+            cameraViewModel.updateCapturedPhotoState(bitmap)
+            Log.d("URI", "$uri")
+            navHController.navigate(Screens.ImagePreviewScreen.route)
+        }
     }
     IconButton(
         modifier = Modifier
@@ -326,10 +337,10 @@ fun PickImageFromGallery(
 
 @Composable
 fun CapturePhotoBtn(appViewModel: AppViewModel, navHController: NavHostController){
-    if (appViewModel.selectedCategory.value != null){
+    if (appViewModel.currentSelectedCategory.value != null){
         FloatingActionButton(
             onClick = {
-                if (appViewModel.selectedCategory.value != null) {
+                if (appViewModel.currentSelectedCategory.value != null) {
                     navHController.navigate(Screens.MainCameraScreen.route)
                 }
             },

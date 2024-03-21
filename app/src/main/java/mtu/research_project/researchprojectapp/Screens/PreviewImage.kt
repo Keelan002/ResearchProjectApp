@@ -136,7 +136,7 @@ fun PreviewNewPhoto(
             PreviewImageBtns(
                 text = "Retake photo",
                 onClick = {
-                    if (appViewModel.selectedCategory.value != null) {
+                    if (appViewModel.currentSelectedCategory.value != null) {
                         navHController.navigate(Screens.MainCameraScreen.route)
                     }
                 }

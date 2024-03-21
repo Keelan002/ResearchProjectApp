@@ -85,7 +85,10 @@ fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Uni
                 Button(
                     onClick = {
                         if (subCategoryName.isNotBlank()){
-                            val newSubCategory = Category(subCategoryName)
+                            val newSubCategory = Category(
+                                name = subCategoryName,
+                            )
+                            Log.d("NEW SUB CATEGORY", "$newSubCategory")
                             onAddCategory(newSubCategory)
                         }else{
                             submitWithNoName = true

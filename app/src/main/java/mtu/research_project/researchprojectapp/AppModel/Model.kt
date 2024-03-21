@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 data class Category(
     val name: String,
     val photos: MutableList<CategoryImage>? = mutableListOf(),
-    val subCategories: MutableList<Category>? = mutableListOf()
+    val subCategories: MutableList<Category>? = mutableListOf(),
 )
 
 data class CategoryImage(
