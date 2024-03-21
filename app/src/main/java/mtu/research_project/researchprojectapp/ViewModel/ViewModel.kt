@@ -200,7 +200,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     @Composable
     fun RunAddSubCategoryDialog(navHostController: NavHostController) {
         AddSubCategoryDialog(
-            onDismiss = { hideAddSubCategoryDialog() },
+            onDismiss = { navHostController.navigate(Screens.CaptureScreen.route) },
             onAddCategory = { category ->
                 addSubCategoryToCategory(category)
                 hideAddSubCategoryDialog()
