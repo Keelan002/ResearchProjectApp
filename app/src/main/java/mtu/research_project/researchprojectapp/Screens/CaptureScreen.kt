@@ -127,7 +127,7 @@ fun CaptureScreenContent(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
 
                 navigationIcon = {
-                    if (appViewModel.currentSelectedCategory.value != null){
+                    if (appViewModel.categories.isNotEmpty()){
                         IconButton(
                             modifier = Modifier
                                 .padding(top = 10.dp)
@@ -139,6 +139,7 @@ fun CaptureScreenContent(
                                 appViewModel.setSelectedCategory(lastCategory)
                                 }
                                 Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
+                                Log.d("CATEGORIES", "${appViewModel.categories}")
                             }
                         ) {
                             Icon(
@@ -175,7 +176,7 @@ fun CaptureScreenContent(
                             )
                         }
 
-                        if (appViewModel.isViewingSub.value){
+                        if (appViewModel.categories.isNotEmpty()){
                             PickImageFromGallery(
                                 context = context,
                                 appViewModel = appViewModel,
@@ -212,8 +213,11 @@ fun CaptureScreenContent(
                 }
             }
         },
+
         floatingActionButton = {
-            CapturePhotoBtn(appViewModel = appViewModel, navHController = navHController)
+            if (appViewModel.categories.isNotEmpty()){
+                CapturePhotoBtn(appViewModel = appViewModel, navHController = navHController)
+            }
         },
     )
 }
@@ -241,6 +245,7 @@ fun DisplaySubCategoriesAndImages(
                     appViewModel.setSelectedCategory(category)
                     appViewModel.addCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
+                    Log.d("CATEGORIES", "${appViewModel.categories}")
                           },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
@@ -294,6 +299,7 @@ fun DisplayCategories(appViewModel: AppViewModel) {
                     appViewModel.setSelectedCategory(category)
                     appViewModel.addCategory(category)
                     Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
+                    Log.d("CATEGORIES", "${appViewModel.categories}")
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
