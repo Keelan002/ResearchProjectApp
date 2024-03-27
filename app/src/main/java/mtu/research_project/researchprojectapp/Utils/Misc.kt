@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mtu.research_project.researchprojectapp.R
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
 fun CustomButton(
@@ -176,4 +177,53 @@ fun PreviewImageBtns(onClick: () -> Unit, text: String){
 
     Spacer(modifier = Modifier.width(16.dp))
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilteredCustomTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    icon: ImageVector?,
+    appViewModel: AppViewModel,
+    modifier: Modifier
+) {
+    TextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+            .size(height = 56.dp, width = 360.dp),
+        value = value,
+        onValueChange = {
+            onValueChange(it)
+            appViewModel.setSearchQuery(it)
+        },
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = Color.Black
+            )
+        },
+        textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
+        singleLine = true,
+        shape = RoundedCornerShape(12.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Black,
+            containerColor = Color.Gray,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        leadingIcon = {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "search",
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp)
+                        .size(24.dp, 24.dp)
+                )
+            }
+        }
+    )
 }

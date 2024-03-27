@@ -15,6 +15,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.navigation.NavHostController
 import com.mr0xf00.easycrop.CropState
 import com.mr0xf00.easycrop.ui.ImageCropperDialog
@@ -62,11 +63,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentSelectedCategory = MutableLiveData<Category?>()
     var currentSelectedCategory: LiveData<Category?> = _currentSelectedCategory
 
+    private val _allCategories: MutableState<List<Category>> = mutableStateOf(emptyList())
+    private val allCategories: List<Category> get() = _allCategories.value
+
     private val _topLvlCategories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val topLvlCategories: List<Category> get() = _topLvlCategories.value
 
-    private val _categories: MutableState<List<Category>> = mutableStateOf(emptyList())
-    val categories: List<Category> get() = _categories.value
+    private val _categoryNavigationStack: MutableState<List<Category>> = mutableStateOf(emptyList())
+    val categoryNavigationStack: List<Category> get() = _categoryNavigationStack.value
 
     private val _isEditingExistingPhoto = mutableStateOf(false)
 
@@ -75,20 +79,54 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _isViewingSub = mutableStateOf(false)
     val isViewingSub: MutableState<Boolean> = _isViewingSub
 
+    private val _searchQuery = MutableLiveData<String>()
+    val searchQuery: LiveData<String> get() = _searchQuery
+
     var selectedImage by mutableStateOf<CategoryImage?>(null)
 
+    val filteredCategories: LiveData<List<Category>> = searchQuery.map { query ->
+        filterCategoriesByName(query)
+    }
+    private fun filterCategoriesByName(searchQuery: String): List<Category> {
+        val lowercaseQuery = searchQuery.lowercase().trim()
+        if (lowercaseQuery.isEmpty()) {
+            return emptyList()
+        }
+        return allCategories.filter { category ->
+            category.name.lowercase().contains(lowercaseQuery)
+        }
+    }
+
+
+
+
+    private fun addAllCategories(categories: List<Category>) {
+        val allCategoriesList = mutableListOf<Category>()
+        categories.forEach { category ->
+            allCategoriesList.add(category)
+            if (category.subCategories?.isNotEmpty() == true) {
+                category.subCategories.let { allCategoriesList.addAll(it) }
+            }
+        }
+        _allCategories.value = allCategoriesList
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     fun addCategory(category: Category) {
-        _categories.value += category
+        _categoryNavigationStack.value += category
     }
 
     fun removeLastCategory() {
-        if (_categories.value.isNotEmpty()) {
-            _categories.value = _categories.value.dropLast(1)
+        if (_categoryNavigationStack.value.isNotEmpty()) {
+            _categoryNavigationStack.value = _categoryNavigationStack.value.dropLast(1)
         }
     }
 
     fun getLastCategory(): Category? {
-        return categories.lastOrNull()
+        return categoryNavigationStack.lastOrNull()
     }
 
     fun setCategoryImageName(image: CategoryImage, newTitle: String): CategoryImage {
@@ -110,7 +148,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun createCategory(category: Category) {
         _topLvlCategories.value = _topLvlCategories.value + category
-        Log.d("TOP LVL CATE", "$topLvlCategories")
     }
 
     fun addPhotoToCategory(bitmap: Bitmap, title: String) {
@@ -191,7 +228,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 onAddCategory = { category ->
                     createCategory(category)
                     hideAddCategoryDialog()
-                    Log.d("AppViewModel", "Categories: $categories")
+                    addAllCategories(topLvlCategories)
                 }
             )
         }
@@ -204,8 +241,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             onAddCategory = { category ->
                 addSubCategoryToCategory(category)
                 hideAddSubCategoryDialog()
+                addAllCategories(topLvlCategories)
                 navHostController.navigate(Screens.CaptureScreen.route)
-                Log.d("AppViewModel", "Categories: $categories")
             },
             appViewModel = this
         )

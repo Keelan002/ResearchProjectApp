@@ -3,12 +3,10 @@ package mtu.research_project.researchprojectapp.Screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,12 +20,11 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -61,7 +58,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CategoryBox
-import mtu.research_project.researchprojectapp.Utils.CustomTextField
+import mtu.research_project.researchprojectapp.Utils.FilteredCustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
@@ -80,8 +77,6 @@ fun CaptureScreen(
     }
 
     appViewModel.RunAddCategoryDialog()
-    //appViewModel.RunAddSubCategoryDialog()
-
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -99,10 +94,12 @@ fun CaptureScreenContent(
     val onRequestPermission = cameraPermissionState::launchPermissionRequest
 
     val selectedCategory by appViewModel.currentSelectedCategory.observeAsState()
+    val searchQuery by appViewModel.searchQuery.observeAsState()
+
     val updatedSelectedCategory = rememberUpdatedState(selectedCategory)
     val context = LocalContext.current
     var text by rememberSaveable { mutableStateOf("") }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -110,7 +107,6 @@ fun CaptureScreenContent(
                 modifier = Modifier
                     .size(width = 411.dp, height = 50.dp),
                 title = {
-
                     (if (!appViewModel.isViewingSub.value) "APP NAME" else appViewModel.getLastCategory()?.name)?.let {
                         Text(
                             fontSize = 30.sp,
@@ -120,14 +116,13 @@ fun CaptureScreenContent(
                                 .padding(start = 20.dp, top = 10.dp)
                         )
                     }
-
                 },
 
 
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
 
                 navigationIcon = {
-                    if (appViewModel.categories.isNotEmpty()){
+                    if (appViewModel.categoryNavigationStack.isNotEmpty()){
                         IconButton(
                             modifier = Modifier
                                 .padding(top = 10.dp)
@@ -138,8 +133,6 @@ fun CaptureScreenContent(
                                 if (lastCategory != null) {
                                 appViewModel.setSelectedCategory(lastCategory)
                                 }
-                                Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
-                                Log.d("CATEGORIES", "${appViewModel.categories}")
                             }
                         ) {
                             Icon(
@@ -175,15 +168,6 @@ fun CaptureScreenContent(
                                 tint = Color.Cyan
                             )
                         }
-
-                        if (appViewModel.categories.isNotEmpty()){
-                            PickImageFromGallery(
-                                context = context,
-                                appViewModel = appViewModel,
-                                navHController = navHController,
-                                cameraViewModel = cameraViewModel
-                            )
-                        }
                     }
                 }
             )
@@ -195,33 +179,97 @@ fun CaptureScreenContent(
                     .padding(top = 48.dp)
                     .background(Color.Black)
             ) {
-                CustomTextField(
+
+
+                FilteredCustomTextField(
                     value = text,
                     onValueChange = { text = it },
                     placeholder = "Search",
                     icon = Icons.Default.Search,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    appViewModel = appViewModel
                 )
 
-                if (appViewModel.currentSelectedCategory.value == null || appViewModel.categories.isEmpty()){
-                    DisplayCategories(appViewModel)
+
+
+                if (!searchQuery.isNullOrEmpty()){
+                    DisplayFilteredCategories(appViewModel)
                 }else{
-                    DisplaySubCategoriesAndImages(
+                    if (appViewModel.currentSelectedCategory.value == null || appViewModel.categoryNavigationStack.isEmpty()){
+                        DisplayCategories(appViewModel)
+                    }else{
+                        DisplaySubCategoriesAndImages(
+                            appViewModel = appViewModel,
+                            navHController = navHController
+                        )
+                    }
+                }
+            }
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+
+                if (appViewModel.isViewingSub.value){
+                    PickImageFromGallery(
+                        context = context,
+                        appViewModel = appViewModel,
+                        navHController = navHController,
+                        cameraViewModel = cameraViewModel
+                    )
+                    CapturePhotoBtn(
                         appViewModel = appViewModel,
                         navHController = navHController
                     )
                 }
             }
-        },
-
-        floatingActionButton = {
-            if (appViewModel.categories.isNotEmpty()){
-                CapturePhotoBtn(appViewModel = appViewModel, navHController = navHController)
-            }
-        },
+        }
     )
 }
 
+@Composable
+fun DisplayCorrect(appViewModel: AppViewModel, navHController: NavHostController, searchQuery: String){
+    if (!searchQuery.isNullOrEmpty()){
+        DisplayFilteredCategories(appViewModel)
+    }else{
+        if (appViewModel.currentSelectedCategory.value == null || appViewModel.categoryNavigationStack.isEmpty()){
+            DisplayCategories(appViewModel)
+        }else{
+            DisplaySubCategoriesAndImages(
+                appViewModel = appViewModel,
+                navHController = navHController
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplayCategories(appViewModel: AppViewModel) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 0.dp),
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        items(appViewModel.topLvlCategories) { category ->
+            CategoryBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                text = category.name,
+                onClick = {
+                    appViewModel.updateIsViewingSubBool(true)
+                    appViewModel.setSelectedCategory(category)
+                    appViewModel.addCategory(category)
+                },
+                fileCount = appViewModel.countSubCategoriesAndImages(category)
+            )
+        }
+    }
+}
 
 @Composable
 fun DisplaySubCategoriesAndImages(
@@ -244,9 +292,7 @@ fun DisplaySubCategoriesAndImages(
                 onClick = {
                     appViewModel.setSelectedCategory(category)
                     appViewModel.addCategory(category)
-                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
-                    Log.d("CATEGORIES", "${appViewModel.categories}")
-                          },
+                },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
@@ -281,31 +327,33 @@ fun DisplaySubCategoriesAndImages(
     }
 }
 
+
 @Composable
-fun DisplayCategories(appViewModel: AppViewModel) {
+fun DisplayFilteredCategories(appViewModel: AppViewModel) {
+    val filteredCategories by appViewModel.filteredCategories.observeAsState()
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 0.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(appViewModel.topLvlCategories) { category ->
+        items(filteredCategories ?: emptyList()) { category ->
             CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 text = category.name,
                 onClick = {
-                    appViewModel.updateIsViewingSubBool(true)
-                    appViewModel.setSelectedCategory(category)
-                    appViewModel.addCategory(category)
-                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
-                    Log.d("CATEGORIES", "${appViewModel.categories}")
+
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
     }
 }
+
+
+
+
 
 @Composable
 fun PickImageFromGallery(
@@ -314,7 +362,6 @@ fun PickImageFromGallery(
     navHController: NavHostController,
     cameraViewModel: CameraViewModel
 ) {
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -325,44 +372,61 @@ fun PickImageFromGallery(
             navHController.navigate(Screens.ImagePreviewScreen.route)
         }
     }
-    IconButton(
-        modifier = Modifier
-            .padding(top = 10.dp)
-            .size(width = 48.dp, height = 48.dp),
+    FloatingActionButton(
         onClick = {
             launcher.launch("image/*")
-        }
+        },
+        modifier = Modifier
+            .size(width = 200.dp, height = 56.dp),
+        containerColor = Color.Black
     ) {
-        Icon(
-            modifier = Modifier
-                .size(width = 24.dp, height = 24.dp),
-            imageVector = Icons.Default.ArrowUpward,
-            contentDescription = "add category icon",
-            tint = Color.Cyan
-        )
+        Column {
+            Icon(
+                imageVector = Icons.Default.ArrowUpward,
+                contentDescription = null,
+                tint = secondaryColor,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = "Upload photo",
+                color = secondaryColor
+            )
+        }
     }
 }
 
 @Composable
 fun CapturePhotoBtn(appViewModel: AppViewModel, navHController: NavHostController){
-    if (appViewModel.currentSelectedCategory.value != null){
-        FloatingActionButton(
-            onClick = {
-                if (appViewModel.currentSelectedCategory.value != null) {
-                    navHController.navigate(Screens.MainCameraScreen.route)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 40.dp)
-                .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
-            contentColor = Color.Black,
-            containerColor = secondaryColor
-        ) {
-            Text("Capture photo")
+    FloatingActionButton(
+        onClick = {
+            if (appViewModel.currentSelectedCategory.value != null) {
+                navHController.navigate(Screens.MainCameraScreen.route)
+            }
+        },
+        modifier = Modifier
+            .size(width = 200.dp, height = 56.dp),
+        containerColor = Color.Black
+    ) {
+        Column {
+            Icon(
+                imageVector = Icons.Default.CameraEnhance,
+                contentDescription = null,
+                tint = secondaryColor,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = "Capture photo",
+                color = secondaryColor
+            )
         }
+
     }
 }
+
+
+
 
 
 
