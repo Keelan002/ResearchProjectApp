@@ -103,7 +103,6 @@ fun CaptureScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-
                 modifier = Modifier
                     .size(width = 411.dp, height = 50.dp),
                 title = {
@@ -230,21 +229,6 @@ fun CaptureScreenContent(
     )
 }
 
-@Composable
-fun DisplayCorrect(appViewModel: AppViewModel, navHController: NavHostController, searchQuery: String){
-    if (!searchQuery.isNullOrEmpty()){
-        DisplayFilteredCategories(appViewModel)
-    }else{
-        if (appViewModel.currentSelectedCategory.value == null || appViewModel.categoryNavigationStack.isEmpty()){
-            DisplayCategories(appViewModel)
-        }else{
-            DisplaySubCategoriesAndImages(
-                appViewModel = appViewModel,
-                navHController = navHController
-            )
-        }
-    }
-}
 
 @Composable
 fun DisplayCategories(appViewModel: AppViewModel) {

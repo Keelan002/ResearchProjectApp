@@ -49,28 +49,6 @@ import mtu.research_project.researchprojectapp.R
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
-@Composable
-fun CustomButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-        modifier = modifier
-    ) {
-
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = Color.Black,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 32.dp)
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,22 +139,19 @@ fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier, fileCount
 fun PreviewImageBtns(onClick: () -> Unit, text: String){
     Button(
         onClick = onClick ,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
         modifier = Modifier
-            .size(120.dp, 60.dp)
-            .padding(start = 24.dp)
+            .size(140.dp, 60.dp)
     ) {
         Text(
             text = text,
+            fontSize = 20.sp,
             textAlign = TextAlign.Center,
-            color = Color.Black,
+            color = secondaryColor,
             modifier = Modifier
                 .weight(1f)
         )
     }
-
-    Spacer(modifier = Modifier.width(16.dp))
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

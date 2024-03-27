@@ -131,10 +131,10 @@ fun PreviewNewPhoto(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Gray)
+                .background(Color.Black)
         ){
             PreviewImageBtns(
-                text = "Retake photo",
+                text = "Retake",
                 onClick = {
                     if (appViewModel.currentSelectedCategory.value != null) {
                         navHController.navigate(Screens.MainCameraScreen.route)
@@ -143,7 +143,7 @@ fun PreviewNewPhoto(
             )
 
             PreviewImageBtns(
-                text = "Edit photo",
+                text = "Edit",
                 onClick = {
                     navHController.navigate(Screens.ImageEditorScreen.route)
                 }
@@ -196,7 +196,7 @@ fun PreviewExistingPhoto(
                 .background(Color.Black)
         ){
             PreviewImageBtns(
-                text = "Delete photo",
+                text = "Delete",
                 onClick = {
                     appViewModel.removePhotoAndTitle(selectedImage)
                     navHController.navigate(Screens.CaptureScreen.route)
@@ -204,7 +204,7 @@ fun PreviewExistingPhoto(
             )
 
             PreviewImageBtns(
-                text = "Edit photo",
+                text = "Edit",
                 onClick = {
                     navHController.navigate(Screens.ImageEditorScreen.route)
                 }
