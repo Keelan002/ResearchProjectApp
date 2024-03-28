@@ -136,10 +136,6 @@ fun CaptureScreenContent(
                                     appViewModel.setSelectedCategory(null)
                                     appViewModel.isViewingSub.value = false
                                 }
-                                Log.d("NAV STACK", "${appViewModel.categoryNavigationStack}")
-                                Log.d("LAST CATEGORY", "$lastCategory")
-                                Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
-                                Log.d("IS VIEWING SUB", "${appViewModel.isViewingSub.value}")
                             }
                         ) {
                             Icon(

@@ -1,5 +1,6 @@
 package mtu.research_project.researchprojectapp.Screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -198,7 +199,9 @@ fun PreviewExistingPhoto(
             PreviewImageBtns(
                 text = "Delete",
                 onClick = {
-                    appViewModel.removePhotoAndTitle(selectedImage)
+                    Log.d("SELECED IMAGE", selectedImage.imageTitle)
+                    appViewModel.deletePhotoByTitle(selectedImage.imageTitle)
+                    Log.d("CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                     navHController.navigate(Screens.CaptureScreen.route)
                 }
             )

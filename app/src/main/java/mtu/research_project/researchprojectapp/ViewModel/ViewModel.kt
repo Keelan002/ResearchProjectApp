@@ -87,29 +87,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val filteredCategories: LiveData<List<Category>> = searchQuery.map { query ->
         filterCategoriesByName(query)
     }
-    private fun filterCategoriesByName(searchQuery: String): List<Category> {
-        val lowercaseQuery = searchQuery.lowercase().trim()
-        if (lowercaseQuery.isEmpty()) {
-            return emptyList()
-        }
-        return allCategories.filter { category ->
-            category.name.lowercase().contains(lowercaseQuery)
-        }
-    }
 
-
-
-
-    private fun addAllCategories(categories: List<Category>) {
-        val allCategoriesList = mutableListOf<Category>()
-        categories.forEach { category ->
-            allCategoriesList.add(category)
-            if (category.subCategories?.isNotEmpty() == true) {
-                category.subCategories.let { allCategoriesList.addAll(it) }
-            }
-        }
-        _allCategories.value = allCategoriesList
-    }
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
@@ -188,9 +166,43 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 val updatedPhotos = category.photos.toMutableList()
                 updatedPhotos.removeAt(index)
                 _currentSelectedCategory.value = category.copy(photos = updatedPhotos)
-
+                Log.d("Category", "$category")
             }
         }
+    }
+
+    fun deletePhotoByTitle(imageTitle: String) {
+        val selectedCategory = currentSelectedCategory.value ?: return
+
+        val photoIndex = selectedCategory.photos?.indexOfFirst { it.imageTitle == imageTitle }
+
+        if (photoIndex != -1) {
+            if (photoIndex != null) {
+                selectedCategory.photos.removeAt(photoIndex)
+            }
+        }
+    }
+
+
+    private fun filterCategoriesByName(searchQuery: String): List<Category> {
+        val lowercaseQuery = searchQuery.lowercase().trim()
+        if (lowercaseQuery.isEmpty()) {
+            return emptyList()
+        }
+        return allCategories.filter { category ->
+            category.name.lowercase().contains(lowercaseQuery)
+        }
+    }
+
+    private fun addAllCategories(categories: List<Category>) {
+        val allCategoriesList = mutableListOf<Category>()
+        categories.forEach { category ->
+            allCategoriesList.add(category)
+            if (category.subCategories?.isNotEmpty() == true) {
+                category.subCategories.let { allCategoriesList.addAll(it) }
+            }
+        }
+        _allCategories.value = allCategoriesList
     }
 
     fun loadImageFromUriAsBitmap(context: Context, uri: Uri): Bitmap? {
