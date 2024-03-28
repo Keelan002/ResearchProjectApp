@@ -3,6 +3,7 @@ package mtu.research_project.researchprojectapp.Screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -131,7 +132,14 @@ fun CaptureScreenContent(
                                 val lastCategory = appViewModel.getLastCategory()
                                 if (lastCategory != null) {
                                 appViewModel.setSelectedCategory(lastCategory)
+                                }else{
+                                    appViewModel.setSelectedCategory(null)
+                                    appViewModel.isViewingSub.value = false
                                 }
+                                Log.d("NAV STACK", "${appViewModel.categoryNavigationStack}")
+                                Log.d("LAST CATEGORY", "$lastCategory")
+                                Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
+                                Log.d("IS VIEWING SUB", "${appViewModel.isViewingSub.value}")
                             }
                         ) {
                             Icon(
@@ -247,7 +255,9 @@ fun DisplayCategories(appViewModel: AppViewModel) {
                 onClick = {
                     appViewModel.updateIsViewingSubBool(true)
                     appViewModel.setSelectedCategory(category)
-                    appViewModel.addCategory(category)
+                    appViewModel.addCatgeoryToNavStack(category)
+                    Log.d("NAV STACK", "${appViewModel.categoryNavigationStack}")
+                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
@@ -275,7 +285,9 @@ fun DisplaySubCategoriesAndImages(
                 text = category.name,
                 onClick = {
                     appViewModel.setSelectedCategory(category)
-                    appViewModel.addCategory(category)
+                    appViewModel.addCatgeoryToNavStack(category)
+                    Log.d("NAV STACK", "${appViewModel.categoryNavigationStack}")
+                    Log.d("SELECTED CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                 },
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )

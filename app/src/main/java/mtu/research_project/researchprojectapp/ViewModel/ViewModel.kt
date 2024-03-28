@@ -115,7 +115,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _searchQuery.value = query
     }
 
-    fun addCategory(category: Category) {
+    fun addCatgeoryToNavStack(category: Category) {
         _categoryNavigationStack.value += category
     }
 
@@ -141,7 +141,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _isEditingExistingPhoto.value = newValue
     }
 
-    fun setSelectedCategory(category: Category) {
+    fun setSelectedCategory(category: Category?) {
         _currentSelectedCategory.value = category
     }
 
@@ -246,6 +246,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             },
             appViewModel = this
         )
+
     }
 
     @Composable
