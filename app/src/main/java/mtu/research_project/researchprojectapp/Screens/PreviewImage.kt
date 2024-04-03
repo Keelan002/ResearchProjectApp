@@ -1,6 +1,5 @@
 package mtu.research_project.researchprojectapp.Screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -52,6 +51,7 @@ fun ImagePreviewScreeContent(
 ){
 
     var imageTitle by rememberSaveable { mutableStateOf("") }
+    var otherImageTitle by rememberSaveable { mutableStateOf("") }
     val lastCapturedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap()
     val selectedImage = appViewModel.selectedImage
     val isEditingExistingPhoto = appViewModel.isEditingExistingPhoto.value
@@ -62,14 +62,15 @@ fun ImagePreviewScreeContent(
         modifier = Modifier
             .background(Color.Black)
     ){
+
+
         CustomTextField(
             value = imageTitle,
             onValueChange = { imageTitle = it },
-            placeholder = "enter image title here",
+            placeholder = { if (isEditingExistingPhoto) selectedImage?.imageTitle else "Enter image title here"},
             icon = null,
             modifier = Modifier
         )
-
 
         if (!isEditingExistingPhoto){
             if (lastCapturedImage != null ) {
@@ -199,9 +200,7 @@ fun PreviewExistingPhoto(
             PreviewImageBtns(
                 text = "Delete",
                 onClick = {
-                    Log.d("SELECED IMAGE", selectedImage.imageTitle)
                     appViewModel.deletePhotoByTitle(selectedImage.imageTitle)
-                    Log.d("CATEGORY", "${appViewModel.currentSelectedCategory.value}")
                     navHController.navigate(Screens.CaptureScreen.route)
                 }
             )
@@ -218,6 +217,10 @@ fun PreviewExistingPhoto(
                 onClick = {
                     if (imageTitle.isNotBlank()) {
                         val newImage = appViewModel.setCategoryImageName(selectedImage, imageTitle)
+                        appViewModel.replacePhotoInCategory(selectedImage, newImage)
+                        navHController.navigate(Screens.CaptureScreen.route)
+                    }else{
+                        val newImage = appViewModel.setCategoryImageName(selectedImage, selectedImage.imageTitle)
                         appViewModel.replacePhotoInCategory(selectedImage, newImage)
                         navHController.navigate(Screens.CaptureScreen.route)
                     }

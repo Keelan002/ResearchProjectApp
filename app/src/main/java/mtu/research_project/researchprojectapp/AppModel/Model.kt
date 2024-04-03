@@ -10,7 +10,7 @@ data class Category(
 
 data class CategoryImage(
     val image: Bitmap,
-    val imageTitle: String
+    var imageTitle: String
 )
 
 
