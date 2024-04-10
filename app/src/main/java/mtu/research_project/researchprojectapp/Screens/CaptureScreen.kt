@@ -330,6 +330,7 @@ fun DisplaySubCategoriesAndImages(
 fun DisplayFilteredCategories(appViewModel: AppViewModel) {
 
     val filteredCategories by appViewModel.filteredCategories.observeAsState(emptyList())
+    val filteredPhotos by appViewModel.filteredPhotos.observeAsState(emptyList())
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -348,6 +349,33 @@ fun DisplayFilteredCategories(appViewModel: AppViewModel) {
                 fileCount = appViewModel.countSubCategoriesAndImages(category)
             )
         }
+
+        items(filteredPhotos){photo ->
+            Column {
+                Text(
+                    text = photo.imageTitle,
+                    color = Color.White,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+                Image(
+                    bitmap = photo.image.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .clickable {
+
+                            }
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(start = 12.dp, end = 12.dp)
+                )
+            }
+        }
+
     }
 }
 

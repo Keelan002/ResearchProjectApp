@@ -41,6 +41,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
+import java.util.Locale.filter
 
 @KoinViewModel
 class CameraViewModel : ViewModel() {
@@ -80,6 +81,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _allCategories: MutableState<List<Category>> = mutableStateOf(emptyList())
     private val allCategories: List<Category> get() = _allCategories.value
 
+    private val _allPhotos: MutableState<List<CategoryImage>> = mutableStateOf(emptyList())
+    private val allPhotos: List<CategoryImage> get() = _allPhotos.value
+
     private val _topLvlCategories: MutableState<List<Category>> = mutableStateOf(emptyList())
     val topLvlCategories: List<Category> get() = _topLvlCategories.value
 
@@ -107,6 +111,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _filteredCategories = MutableLiveData<List<Category>>(emptyList())
     val filteredCategories: LiveData<List<Category>> get() = _filteredCategories
 
+    private val _filteredPhotos = MutableLiveData<List<CategoryImage>>(emptyList())
+    val filteredPhotos: LiveData<List<CategoryImage>> get() = _filteredPhotos
+
 
     fun setSearchQuery(query: String) {
         Log.d("SEARCH QUERY", query)
@@ -114,6 +121,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _searchQuery.value = query
         updateFilteredCategories()
         removeNonMatchingCategories(query)
+        updateFilteredImages()
+        removeNonMatchingPhotos(query)
     }
 
     fun addCatgeoryToNavStack(category: Category) {
@@ -158,6 +167,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if (category != null) {
             category.photos?.add(imageToAdd)
         }
+        addPhotoToAllPhoto(imageToAdd)
     }
 
     private fun addSubCategoryToCategory(subCategory: Category){
@@ -177,19 +187,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 if (index != -1) {
                     photos[index] = newImage
                 }
-            }
-        }
-    }
-
-    fun removePhotoAndTitle(selectedPhoto: CategoryImage) {
-        val category = currentSelectedCategory.value
-        if (category != null) {
-            val index = category.photos?.indexOf(selectedPhoto)
-            if (index != null && index != -1) {
-                val updatedPhotos = category.photos.toMutableList()
-                updatedPhotos.removeAt(index)
-                _currentSelectedCategory.value = category.copy(photos = updatedPhotos)
-                Log.d("Category", "$category")
             }
         }
     }
@@ -221,6 +218,19 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun updateFilteredImages() {
+        val lowercaseQuery = _searchQuery.value?.lowercase()?.trim()
+        if (lowercaseQuery != null) {
+            _filteredPhotos.value = if (lowercaseQuery.isEmpty()) {
+                emptyList()
+            } else {
+                allPhotos.filter { photo ->
+                    photo.imageTitle.lowercase().startsWith(lowercaseQuery)
+                }
+            }
+        }
+    }
+
     private fun removeNonMatchingCategories(query: String) {
         val lowercaseQuery = query.lowercase().trim()
 
@@ -229,6 +239,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }else{
             _filteredCategories.value = _filteredCategories.value?.filter { category ->
                 category.name.lowercase().contains(lowercaseQuery)
+            }
+        }
+    }
+
+    private fun removeNonMatchingPhotos(query: String) {
+        val lowercaseQuery = query.lowercase().trim()
+
+        if (lowercaseQuery.isEmpty()){
+            _filteredPhotos.value = emptyList()
+        }else{
+            _filteredPhotos.value = filteredPhotos.value?.filter { category ->
+                category.imageTitle.lowercase().contains(lowercaseQuery)
             }
         }
     }
@@ -242,6 +264,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         _allCategories.value = allCategoriesList
+    }
+
+    private fun addPhotoToAllPhoto(image: CategoryImage) {
+        _allPhotos.value = _allPhotos.value + image
     }
 
     fun loadImageFromUriAsBitmap(context: Context, uri: Uri): Bitmap? {
