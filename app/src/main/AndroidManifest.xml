@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
@@ -15,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ResearchProjectApp"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:networkSecurityConfig="@xml/network_security_config"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true">

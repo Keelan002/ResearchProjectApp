@@ -1,5 +1,6 @@
 package mtu.research_project.researchprojectapp.Screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,14 +69,33 @@ fun ImagePreviewScreeContent(
             .background(Color.Black)
     ){
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ){
 
-        CustomTextField(
-            value = imageTitle,
-            onValueChange = { imageTitle = it },
-            placeholder = { if (isEditingExistingPhoto) selectedImage?.imageTitle else "Enter image title here"},
-            icon = null,
-            modifier = Modifier
-        )
+            IconButton(
+                onClick = { navHController.navigate(Screens.CaptureScreen.route) },
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 20.dp)
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size( width = 24.dp, height = 24.dp ),
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back", tint = Color.Cyan
+                )
+            }
+
+            CustomTextField(
+                value = imageTitle,
+                onValueChange = { imageTitle = it },
+                placeholder = { if (isEditingExistingPhoto) selectedImage?.imageTitle else "Enter image title here"},
+                icon = null,
+                modifier = Modifier
+            )
+        }
+
+
 
         if (!isEditingExistingPhoto){
             if (lastCapturedImage != null ) {
@@ -215,15 +240,9 @@ fun PreviewExistingPhoto(
             PreviewImageBtns(
                 text = "Submit",
                 onClick = {
-                    if (imageTitle.isNotBlank()) {
-                        val newImage = appViewModel.setCategoryImageName(selectedImage, imageTitle)
-                        appViewModel.replacePhotoInCategory(selectedImage, newImage)
-                        navHController.navigate(Screens.CaptureScreen.route)
-                    }else{
-                        val newImage = appViewModel.setCategoryImageName(selectedImage, selectedImage.imageTitle)
-                        appViewModel.replacePhotoInCategory(selectedImage, newImage)
-                        navHController.navigate(Screens.CaptureScreen.route)
-                    }
+                    val newImage = appViewModel.setCategoryImageName(selectedImage, if (imageTitle.isNotBlank()) imageTitle else selectedImage.imageTitle)
+                    appViewModel.replacePhotoInCategory(selectedImage, newImage)
+                    navHController.navigate(Screens.CaptureScreen.route)
                 }
             )
         }

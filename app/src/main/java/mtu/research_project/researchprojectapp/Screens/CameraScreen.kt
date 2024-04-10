@@ -2,6 +2,7 @@ package mtu.research_project.researchprojectapp.Screens
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Environment
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -54,6 +55,8 @@ import org.koin.androidx.compose.koinViewModel
 import java.util.concurrent.Executor
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun CameraScreen(
@@ -132,7 +135,8 @@ private fun CameraContent(
                         capturePhoto(
                             context = context,
                             cameraController = cameraController,
-                            cameraViewModel = cameraViewModel
+                            cameraViewModel = cameraViewModel,
+                            appViewModel = appViewModel
                         )
                         appViewModel.updateIsEditingExistingPhotoBool(false)
                         coroutineScope.launch {
@@ -153,6 +157,7 @@ private fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController,
     cameraViewModel: CameraViewModel,
+    appViewModel: AppViewModel
 ) {
 
     val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
@@ -163,6 +168,9 @@ private fun capturePhoto(
                 .toBitmap()
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
+            val imagePath = saveBitmapToFile(context, correctedBitmap)
+            appViewModel.setImagePath(imagePath)
+
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
             image.close()
 
@@ -172,5 +180,13 @@ private fun capturePhoto(
             Log.e("CameraContent", "Error capturing image", exception)
         }
     })
+}
+
+private fun saveBitmapToFile(context: Context, bitmap: Bitmap): String {
+    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "captured_image.jpg")
+    FileOutputStream(file).use { fos ->
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+    }
+    return file.absolutePath
 }
 

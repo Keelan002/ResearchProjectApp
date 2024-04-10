@@ -1,13 +1,16 @@
 package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
+import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
+import androidx.camera.core.ImageProcessor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,11 +27,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.CameraX.CameraState
+import mtu.research_project.researchprojectapp.R
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
 import org.koin.android.annotation.KoinViewModel
+import java.io.File
 import java.io.InputStream
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
 
 @KoinViewModel
 class CameraViewModel : ViewModel() {
@@ -44,6 +56,8 @@ class CameraViewModel : ViewModel() {
         _state.value.capturedImage?.recycle()
         super.onCleared()
     }
+
+
 
 
 }
@@ -84,13 +98,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     var selectedImage by mutableStateOf<CategoryImage?>(null)
 
-    val filteredCategories: LiveData<List<Category>> = searchQuery.map { query ->
-        filterCategoriesByName(query)
+    private var imagePath: String? = null
+
+    fun setImagePath(path: String?) {
+        imagePath = path
     }
+
+    private val _filteredCategories = MutableLiveData<List<Category>>(emptyList())
+    val filteredCategories: LiveData<List<Category>> get() = _filteredCategories
 
 
     fun setSearchQuery(query: String) {
+        Log.d("SEARCH QUERY", query)
+        Log.d("FILTERED CATE", "${_filteredCategories.value}")
         _searchQuery.value = query
+        updateFilteredCategories()
+        removeNonMatchingCategories(query)
     }
 
     fun addCatgeoryToNavStack(category: Category) {
@@ -184,13 +207,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    private fun filterCategoriesByName(searchQuery: String): List<Category> {
-        val lowercaseQuery = searchQuery.lowercase().trim()
-        if (lowercaseQuery.isEmpty()) {
-            return emptyList()
+    private fun updateFilteredCategories() {
+        val lowercaseQuery = _searchQuery.value?.lowercase()?.trim()
+        Log.d("LOWERCSSE", "$lowercaseQuery")
+        if (lowercaseQuery != null) {
+            _filteredCategories.value = if (lowercaseQuery.isEmpty()) {
+                emptyList()
+            } else {
+                allCategories.filter { category ->
+                    category.name.lowercase().startsWith(lowercaseQuery)
+                }
+            }
         }
-        return allCategories.filter { category ->
-            category.name.lowercase().contains(lowercaseQuery)
+    }
+
+    private fun removeNonMatchingCategories(query: String) {
+        val lowercaseQuery = query.lowercase().trim()
+
+        if (lowercaseQuery.isEmpty()){
+            _filteredCategories.value = emptyList()
+        }else{
+            _filteredCategories.value = _filteredCategories.value?.filter { category ->
+                category.name.lowercase().contains(lowercaseQuery)
+            }
         }
     }
 
@@ -283,6 +322,65 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         return count
+    }
+
+
+    private fun uploadImage(imageFile: File): Response {
+        val client = OkHttpClient()
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                name = "file",
+                filename = imageFile.name,
+                body = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+            )
+            .build()
+
+        val request = Request.Builder()
+            .url("http://nutriscan.pythonanywhere.com/extract")
+            .post(requestBody)
+            .build()
+
+        return client.newCall(request).execute()
+    }
+
+    private fun parseResponse(responseBody: String): Map<String, Double> {
+        val jsonObject = JSONObject(responseBody)
+        val dataObject = jsonObject.getJSONObject("data")
+        val resultMap = mutableMapOf<String, Double>()
+
+        val keys = dataObject.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = dataObject.getDouble(key)
+            resultMap[key] = value
+        }
+
+        return resultMap
+    }
+
+    suspend fun hitApi(){
+        val imageFile = imagePath?.let { File(it) }
+        val response = imageFile?.let { uploadImage(it) }
+
+        Log.d("IMAGE PATH", "$response")
+
+        if (response != null) {
+            if (response.isSuccessful) {
+                val responseBody = response.body?.string()
+                Log.d("RESPONE BODY" , "$responseBody")
+                val parsedData = responseBody?.let { parseResponse(it) }
+                println("Extracted Data: $parsedData")
+            } else {
+                println("Error: ${response.code} - ${response.message}")
+            }
+        }else{
+            println("RESPONE IS NULL")
+        }
+    }
+
+    fun test(){
+        R.drawable.o_donnels_crisps
     }
 
 }

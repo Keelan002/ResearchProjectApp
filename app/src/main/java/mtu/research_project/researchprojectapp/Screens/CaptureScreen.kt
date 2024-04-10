@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,6 +58,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.Utils.CategoryBox
 import mtu.research_project.researchprojectapp.Utils.FilteredCustomTextField
@@ -179,7 +183,7 @@ fun CaptureScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 48.dp)
+                    .padding(top = 40.dp)
                     .background(Color.Black)
             ) {
 
@@ -192,8 +196,6 @@ fun CaptureScreenContent(
                     modifier = Modifier,
                     appViewModel = appViewModel
                 )
-
-
 
                 if (!searchQuery.isNullOrEmpty()){
                     DisplayFilteredCategories(appViewModel)
@@ -261,6 +263,7 @@ fun DisplayCategories(appViewModel: AppViewModel) {
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun DisplaySubCategoriesAndImages(
     appViewModel: AppViewModel,
@@ -309,10 +312,13 @@ fun DisplaySubCategoriesAndImages(
                             appViewModel.updateIsEditingExistingPhotoBool(true)
                             appViewModel.selectedImage = photo
                             navHController.navigate(Screens.ImagePreviewScreen.route)
+                            GlobalScope.launch {
+                                appViewModel.hitApi()
+                            }
                         }
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .padding(4.dp)
+                        .padding(start = 12.dp, end = 12.dp)
                 )
             }
         }
@@ -322,13 +328,15 @@ fun DisplaySubCategoriesAndImages(
 
 @Composable
 fun DisplayFilteredCategories(appViewModel: AppViewModel) {
-    val filteredCategories by appViewModel.filteredCategories.observeAsState()
+
+    val filteredCategories by appViewModel.filteredCategories.observeAsState(emptyList())
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 0.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(filteredCategories ?: emptyList()) { category ->
+        items(filteredCategories) { category ->
             CategoryBox(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -137,11 +137,6 @@ dependencies {
     //IMAGE CROPPING//
     implementation("io.github.mr0xf00:easycrop:0.1.1")
 
-   /* //ONE DRIVE//
-    // Include the sdk as a dependency
-    implementation ("com.microsoft.graph:microsoft-graph:6.+")
-    // Beta
-    implementation ("com.microsoft.graph:microsoft-graph-beta:6.+")
-    // Include Azure identity for authentication
-    implementation ("com.azure:azure-identity:1.+")*/
+    //implementation ("com.squareup.okhttp3:okhttp:3.0.1")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
 }
