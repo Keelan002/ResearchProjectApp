@@ -1,16 +1,13 @@
 package mtu.research_project.researchprojectapp.ViewModel
 
 import android.app.Application
-import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
-import androidx.camera.core.ImageProcessor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,7 +15,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.navigation.NavHostController
 import com.mr0xf00.easycrop.CropState
 import com.mr0xf00.easycrop.ui.ImageCropperDialog
@@ -116,13 +112,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun setSearchQuery(query: String) {
-        Log.d("SEARCH QUERY", query)
-        Log.d("FILTERED CATE", "${_filteredCategories.value}")
         _searchQuery.value = query
-        updateFilteredCategories()
-        removeNonMatchingCategories(query)
-        updateFilteredImages()
-        removeNonMatchingPhotos(query)
+        val lowercaseQuery = query.lowercase().trim()
+
+        updateFilteredItems(allCategories, _filteredCategories) { category ->
+            category.name.lowercase().startsWith(lowercaseQuery)
+        }
+
+        updateFilteredItems(allPhotos, _filteredPhotos){photo ->
+            photo.imageTitle.lowercase().startsWith(lowercaseQuery)
+        }
     }
 
     fun addCatgeoryToNavStack(category: Category) {
@@ -203,55 +202,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
-    private fun updateFilteredCategories() {
-        val lowercaseQuery = _searchQuery.value?.lowercase()?.trim()
-        Log.d("LOWERCSSE", "$lowercaseQuery")
-        if (lowercaseQuery != null) {
-            _filteredCategories.value = if (lowercaseQuery.isEmpty()) {
-                emptyList()
-            } else {
-                allCategories.filter { category ->
-                    category.name.lowercase().startsWith(lowercaseQuery)
-                }
-            }
-        }
-    }
-
-    private fun updateFilteredImages() {
+    private fun <T> updateFilteredItems(allItems: List<T>, filteredItems: MutableLiveData<List<T>>, predicate: (T) -> Boolean) {
         val lowercaseQuery = _searchQuery.value?.lowercase()?.trim()
         if (lowercaseQuery != null) {
-            _filteredPhotos.value = if (lowercaseQuery.isEmpty()) {
+            filteredItems.postValue(if (lowercaseQuery.isEmpty()) {
                 emptyList()
             } else {
-                allPhotos.filter { photo ->
-                    photo.imageTitle.lowercase().startsWith(lowercaseQuery)
-                }
-            }
-        }
-    }
-
-    private fun removeNonMatchingCategories(query: String) {
-        val lowercaseQuery = query.lowercase().trim()
-
-        if (lowercaseQuery.isEmpty()){
-            _filteredCategories.value = emptyList()
-        }else{
-            _filteredCategories.value = _filteredCategories.value?.filter { category ->
-                category.name.lowercase().contains(lowercaseQuery)
-            }
-        }
-    }
-
-    private fun removeNonMatchingPhotos(query: String) {
-        val lowercaseQuery = query.lowercase().trim()
-
-        if (lowercaseQuery.isEmpty()){
-            _filteredPhotos.value = emptyList()
-        }else{
-            _filteredPhotos.value = filteredPhotos.value?.filter { category ->
-                category.imageTitle.lowercase().contains(lowercaseQuery)
-            }
+                allItems.filter(predicate)
+            })
         }
     }
 
