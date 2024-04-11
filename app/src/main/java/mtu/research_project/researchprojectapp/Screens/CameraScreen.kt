@@ -168,9 +168,6 @@ private fun capturePhoto(
                 .toBitmap()
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
-            val imagePath = saveBitmapToFile(context, correctedBitmap)
-            appViewModel.setImagePath(imagePath)
-
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
             image.close()
 
@@ -182,11 +179,5 @@ private fun capturePhoto(
     })
 }
 
-private fun saveBitmapToFile(context: Context, bitmap: Bitmap): String {
-    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "captured_image.jpg")
-    FileOutputStream(file).use { fos ->
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-    }
-    return file.absolutePath
-}
+
 

@@ -5,12 +5,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
+import android.util.Base64
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +30,7 @@ import mtu.research_project.researchprojectapp.R
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
+import okhttp3.MediaType
 import org.koin.android.annotation.KoinViewModel
 import java.io.File
 import java.io.InputStream
@@ -35,8 +39,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.Locale.filter
 
 @KoinViewModel
@@ -70,6 +79,8 @@ var uiState by mutableStateOf(UiState())
     private set
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
+
+
 
     private val _currentSelectedCategory = MutableLiveData<Category?>()
     var currentSelectedCategory: LiveData<Category?> = _currentSelectedCategory
@@ -308,18 +319,26 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return count
     }
 
+    private fun saveBitmapToFile(bitmap: Bitmap, outputFile: File) {
+        FileOutputStream(outputFile).use { fos ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        }
+    }
 
-    private fun uploadImage(imageFile: File): Response {
+    private fun uploadImage(bitmap: Bitmap, context: Context): Response {
         val client = OkHttpClient()
+
+        // Save bitmap to a temporary JPEG file
+        val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+        saveBitmapToFile(bitmap, tempFile)
+
+        // Create request body
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart(
-                name = "file",
-                filename = imageFile.name,
-                body = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-            )
+            .addFormDataPart("img_path", "image.jpg", tempFile.asRequestBody("image/*".toMediaTypeOrNull()))
             .build()
 
+        // Create and execute the request
         val request = Request.Builder()
             .url("http://nutriscan.pythonanywhere.com/extract")
             .post(requestBody)
@@ -328,43 +347,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return client.newCall(request).execute()
     }
 
-    private fun parseResponse(responseBody: String): Map<String, Double> {
-        val jsonObject = JSONObject(responseBody)
-        val dataObject = jsonObject.getJSONObject("data")
-        val resultMap = mutableMapOf<String, Double>()
-
-        val keys = dataObject.keys()
-        while (keys.hasNext()) {
-            val key = keys.next()
-            val value = dataObject.getDouble(key)
-            resultMap[key] = value
-        }
-
-        return resultMap
-    }
-
-    suspend fun hitApi(){
-        val imageFile = imagePath?.let { File(it) }
-        val response = imageFile?.let { uploadImage(it) }
-
-        Log.d("IMAGE PATH", "$response")
-
-        if (response != null) {
-            if (response.isSuccessful) {
-                val responseBody = response.body?.string()
-                Log.d("RESPONE BODY" , "$responseBody")
-                val parsedData = responseBody?.let { parseResponse(it) }
-                println("Extracted Data: $parsedData")
+    fun hitApi() {
+        val response = selectedImage?.image?.let { uploadImage(it, getApplication()) }
+        response?.let {
+            if (it.isSuccessful) {
+                val responseBody = it.body?.string()
+                // Parse the JSON response here
+                // For example:
+                responseBody?.let { json ->
+                    val jsonObject = JSONObject(json)
+                    // Access JSON fields as needed
+                    // For example:
+                    val dataObject = jsonObject.getJSONObject("data")
+                    val keys = dataObject.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        val value = dataObject.getDouble(key)
+                        Log.d("API Response", "Key: $key, Value: $value")
+                    }
+                }
             } else {
-                println("Error: ${response.code} - ${response.message}")
+                Log.e("API Error", "Error: ${it.code} - ${it.message}")
             }
-        }else{
-            println("RESPONE IS NULL")
         }
-    }
-
-    fun test(){
-        R.drawable.o_donnels_crisps
     }
 
 }

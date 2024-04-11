@@ -270,7 +270,7 @@ fun DisplaySubCategoriesAndImages(
     navHController: NavHostController
 ) {
     val selectedCategory = appViewModel.getLastCategory()
-
+    val context: Context = LocalContext.current
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 0.dp),
