@@ -57,7 +57,6 @@ fun ImagePreviewScreeContent(
 ){
 
     var imageTitle by rememberSaveable { mutableStateOf("") }
-    var otherImageTitle by rememberSaveable { mutableStateOf("") }
     val lastCapturedImage = cameraViewModel.state.value.capturedImage?.asImageBitmap()
     val selectedImage = appViewModel.selectedImage
     val isEditingExistingPhoto = appViewModel.isEditingExistingPhoto.value

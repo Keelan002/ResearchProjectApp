@@ -9,4 +9,5 @@ sealed class Screens (val route: String){
     object ImageEditorScreen: Screens("image_editor_screen")
     object ImagePreviewScreen: Screens("image_preview_screen")
     object AddSubScreen: Screens("add_sub_screen")
+    object DataScreen: Screens("data_screen")
 }

@@ -5,15 +5,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Environment
-import android.util.Base64
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,11 +23,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.CameraX.CameraState
-import mtu.research_project.researchprojectapp.R
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddSubCategoryDialog
-import okhttp3.MediaType
 import org.koin.android.annotation.KoinViewModel
 import java.io.File
 import java.io.InputStream
@@ -39,14 +34,9 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
-import java.io.IOException
-import java.util.Locale.filter
 
 @KoinViewModel
 class CameraViewModel : ViewModel() {
@@ -110,6 +100,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     var selectedImage by mutableStateOf<CategoryImage?>(null)
 
     private var imagePath: String? = null
+
+    var dataObject: JSONObject? = null
+
+    var cleanData: String? = null
+    fun setDataObject() {
+        dataObject = hitApi()
+    }
+
+    fun setCleanData(){
+        cleanData = cleanUpData(dataObject.toString())
+    }
 
     fun setImagePath(path: String?) {
         imagePath = path
@@ -347,30 +348,66 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return client.newCall(request).execute()
     }
 
-    fun hitApi() {
+    fun hitApi(): JSONObject? {
         val response = selectedImage?.image?.let { uploadImage(it, getApplication()) }
         response?.let {
             if (it.isSuccessful) {
                 val responseBody = it.body?.string()
-                // Parse the JSON response here
-                // For example:
                 responseBody?.let { json ->
                     val jsonObject = JSONObject(json)
-                    // Access JSON fields as needed
-                    // For example:
-                    val dataObject = jsonObject.getJSONObject("data")
-                    val keys = dataObject.keys()
-                    while (keys.hasNext()) {
-                        val key = keys.next()
-                        val value = dataObject.getDouble(key)
-                        Log.d("API Response", "Key: $key, Value: $value")
+                    Log.d("JsonObject", "$jsonObject")
+
+                    if (jsonObject.has("data")) {
+                        val dataObject = jsonObject.getJSONObject("data")
+                        Log.d("dataObject", "$dataObject")
+
+                        val keys = dataObject.keys()
+                        while (keys.hasNext()) {
+                            val key = keys.next()
+                            val value = dataObject.getDouble(key)
+                            Log.d("API Response", "Key: $key, Value: $value")
+                        }
+
+                        // Return the dataObject
+                        return dataObject
+                    } else {
+                        Log.e("API Error", "No 'data' field found in JSON response")
                     }
                 }
-            } else {
-                Log.e("API Error", "Error: ${it.code} - ${it.message}")
             }
         }
+
+        // Return null if there's no successful response or if 'data' field is missing
+        return null
     }
 
+    private fun cleanUpData(jsonString: String): String {
+        // Remove brackets
+        var cleanedString = jsonString.replace("{", "")
+        cleanedString = cleanedString.replace("}", "")
+
+        // Remove quotes
+        cleanedString = cleanedString.replace("\"", "")
+
+        // Split by commas
+        val keyValuePairs = cleanedString.split(",")
+
+        // Filter out key-value pairs with value 0
+        val filteredPairs = keyValuePairs.filter { pair ->
+            val value = pair.split(":")[1].toDoubleOrNull()
+            value != null && value != 0.0
+        }
+
+        // Join the filtered pairs back into a string without commas
+
+        return filteredPairs.joinToString(separator = "\n") { it }
+    }
+
+    fun exportToCSV(cleanedData: String, fileName: String) {
+        val csvFile = File(fileName)
+        Log.d("FILE PATH", csvFile.absolutePath)
+        csvFile.writeText(cleanedData)
+        Log.d("CSV EXPORTED", "SUCCESS")
+    }
 }
 

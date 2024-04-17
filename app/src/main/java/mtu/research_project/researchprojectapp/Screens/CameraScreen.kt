@@ -140,7 +140,7 @@ private fun CameraContent(
                         )
                         appViewModel.updateIsEditingExistingPhotoBool(false)
                         coroutineScope.launch {
-                            delay(500) // 5000 milliseconds = 5 seconds
+                            delay(5000) // 5000 milliseconds = 5 seconds
                             navController.navigate(Screens.ImagePreviewScreen.route)
                         }
                     }
@@ -169,6 +169,7 @@ private fun capturePhoto(
                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
             cameraViewModel.updateCapturedPhotoState(correctedBitmap)
+            Log.d("CAMERA SATTE", "${cameraViewModel.state.value.capturedImage}")
             image.close()
 
         }

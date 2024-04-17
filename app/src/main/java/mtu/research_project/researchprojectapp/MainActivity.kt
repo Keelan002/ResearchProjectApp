@@ -17,6 +17,7 @@ import mtu.research_project.researchprojectapp.Screens.AddSubScreen
 import mtu.research_project.researchprojectapp.Screens.CameraScreen
 import mtu.research_project.researchprojectapp.Screens.CaptureScreen
 import mtu.research_project.researchprojectapp.Screens.CheckPermissionScreen
+import mtu.research_project.researchprojectapp.Screens.DataScreen
 import mtu.research_project.researchprojectapp.Screens.ImageEditorScreen
 import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreeContent
 import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreen
@@ -89,6 +90,9 @@ class MainActivity : AppCompatActivity() {
             }
             composable(route = Screens.AddSubScreen.route) {
                 AddSubScreen(appViewModel = appViewModel, navHostController = navController)
+            }
+            composable(route = Screens.DataScreen.route){
+                DataScreen(appViewModel = appViewModel)
             }
         }
     }
