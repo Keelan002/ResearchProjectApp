@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,7 +31,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
 import mtu.research_project.researchprojectapp.Utils.CustomTextField
 import mtu.research_project.researchprojectapp.Utils.PreviewImageBtns
@@ -189,6 +197,7 @@ fun PreviewNewPhoto(
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun PreviewExistingPhoto(
     appViewModel: AppViewModel,
@@ -215,6 +224,8 @@ fun PreviewExistingPhoto(
                 )
             }
         }
+
+        ScanButton(navController = navHController, appViewModel = appViewModel)
 
         Row(
             modifier = Modifier
@@ -257,4 +268,36 @@ private fun getImageScaleConstraints(): Float {
     val scale = minOf(maxWidthValue / 200f, maxHeightValue / 200f)
 
     return if (scale < 1) scale else 1f
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+@Composable
+fun ScanButton(navController: NavController, appViewModel: AppViewModel) {
+    Button(
+        onClick = {
+            GlobalScope.launch {
+                appViewModel.setDataObject()
+                appViewModel.setCleanData()
+                Log.d("DATAOBJECT VEWMODEL", "${appViewModel.cleanData}")
+            }
+        }
+    ) {
+        Text(
+            text = "SCAN"
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        checkDataAndNavigate(navController, appViewModel)
+    }
+}
+
+private suspend fun checkDataAndNavigate(navController: NavController, appViewModel: AppViewModel) {
+    while (true) {
+        delay(1000) // Check every 1 second
+        if (appViewModel.dataObject != null) {
+            navController.navigate(Screens.DataScreen.route)
+            break // Exit the loop after navigation
+        }
+    }
 }

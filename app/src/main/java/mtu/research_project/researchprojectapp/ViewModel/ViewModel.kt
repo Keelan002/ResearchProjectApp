@@ -37,6 +37,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.FileOutputStream
+import java.util.concurrent.TimeUnit
 
 @KoinViewModel
 class CameraViewModel : ViewModel() {
@@ -326,8 +327,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun createOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS) // Increase connect timeout to 30 seconds
+            .readTimeout(30, TimeUnit.SECONDS) // Increase read timeout to 30 seconds
+            .writeTimeout(30, TimeUnit.SECONDS) // Increase write timeout to 30 seconds
+            .build()
+    }
+
     private fun uploadImage(bitmap: Bitmap, context: Context): Response {
-        val client = OkHttpClient()
+        val client = createOkHttpClient()
 
         // Save bitmap to a temporary JPEG file
         val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)

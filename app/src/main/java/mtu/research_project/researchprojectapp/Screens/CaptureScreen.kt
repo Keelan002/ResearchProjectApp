@@ -312,16 +312,6 @@ fun DisplaySubCategoriesAndImages(
                             appViewModel.updateIsEditingExistingPhotoBool(true)
                             appViewModel.selectedImage = photo
                             navHController.navigate(Screens.ImagePreviewScreen.route)
-                            GlobalScope.launch {
-                                appViewModel.hitApi()
-                                appViewModel.setDataObject()
-                                appViewModel.setCleanData()
-                                Log.d("DATAOBJECT VEWMODEL", "${appViewModel.cleanData}")
-                            }
-                            if (appViewModel.dataObject != null){
-                                navHController.navigate(Screens.DataScreen.route)
-                            }
-                            appViewModel.exportToCSV(appViewModel.cleanData.toString(), "cleaned_data.csv")
                         }
                         .fillMaxWidth()
                         .aspectRatio(1f)
