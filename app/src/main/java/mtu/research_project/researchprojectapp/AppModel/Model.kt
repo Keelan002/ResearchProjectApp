@@ -13,4 +13,10 @@ data class CategoryImage(
     var imageTitle: String
 )
 
+data class LabelData(
+    val labelDataName: String,
+    val keys: MutableList<String>? = mutableListOf(),
+    val values: MutableList<String>? = mutableListOf()
+)
+
 

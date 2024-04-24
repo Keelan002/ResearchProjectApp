@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.AppModel.CategoryImage
+import mtu.research_project.researchprojectapp.AppModel.LabelData
 import mtu.research_project.researchprojectapp.CameraX.CameraState
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.Utils.Dialogs.AddCategoryDialog
@@ -102,15 +103,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private var imagePath: String? = null
 
-    var dataObject: JSONObject? = null
+    var dataObject: LabelData? = null
 
-    var cleanData: String? = null
+    var cleanData: LabelData? = null
+
     fun setDataObject() {
         dataObject = hitApi()
     }
 
-    fun setCleanData(){
-        cleanData = cleanUpData(dataObject.toString())
+    fun cleanData(){
+        cleanData = cleanUpData(dataObject)
     }
 
     fun setImagePath(path: String?) {
@@ -357,7 +359,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return client.newCall(request).execute()
     }
 
-    fun hitApi(): JSONObject? {
+
+
+    fun hitApi(): LabelData? {
         val response = selectedImage?.image?.let { uploadImage(it, getApplication()) }
         response?.let {
             if (it.isSuccessful) {
@@ -370,15 +374,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         val dataObject = jsonObject.getJSONObject("data")
                         Log.d("dataObject", "$dataObject")
 
+                        val keys2 = mutableListOf<String>()
+                        val values2 = mutableListOf<String>()
+
+
                         val keys = dataObject.keys()
                         while (keys.hasNext()) {
                             val key = keys.next()
                             val value = dataObject.getDouble(key)
+                            keys2.add(key)
+                            values2.add(value.toString())
                             Log.d("API Response", "Key: $key, Value: $value")
                         }
 
+                        val data = selectedImage?.imageTitle?.let { it1 ->
+                            LabelData(
+                                labelDataName = it1,
+                                keys = keys2,
+                                values = values2
+                            )
+                        }
+
                         // Return the dataObject
-                        return dataObject
+                        return data
                     } else {
                         Log.e("API Error", "No 'data' field found in JSON response")
                     }
@@ -390,26 +408,32 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
-    private fun cleanUpData(jsonString: String): String {
-        // Remove brackets
-        var cleanedString = jsonString.replace("{", "")
-        cleanedString = cleanedString.replace("}", "")
+    fun cleanUpData(labelData: LabelData?): LabelData? {
+        labelData?.let { data ->
+            val cleanedKeys = mutableListOf<String>()
+            val cleanedValues = mutableListOf<String>()
 
-        // Remove quotes
-        cleanedString = cleanedString.replace("\"", "")
+            // Iterate over keys and values
+            for (i in data.keys?.indices!!) {
+                val key = data.keys[i]
+                val value = data.values?.get(i)?.toDoubleOrNull()
 
-        // Split by commas
-        val keyValuePairs = cleanedString.split(",")
+                // Check if the value is not null and not equal to 0
+                if (value != null && value != 0.0) {
+                    // Add cleaned key and value
+                    cleanedKeys.add(key)
+                    cleanedValues.add(value.toString())
+                }
+            }
 
-        // Filter out key-value pairs with value 0
-        val filteredPairs = keyValuePairs.filter { pair ->
-            val value = pair.split(":")[1].toDoubleOrNull()
-            value != null && value != 0.0
+            // Return the cleaned LabelData
+            return LabelData(
+                labelDataName = data.labelDataName,
+                keys = cleanedKeys,
+                values = cleanedValues
+            )
         }
-
-        // Join the filtered pairs back into a string without commas
-
-        return filteredPairs.joinToString(separator = "\n") { it }
+        return null
     }
 
     fun exportToCSV(cleanedData: String, fileName: String) {

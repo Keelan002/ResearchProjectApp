@@ -277,7 +277,7 @@ fun ScanButton(navController: NavController, appViewModel: AppViewModel) {
         onClick = {
             GlobalScope.launch {
                 appViewModel.setDataObject()
-                appViewModel.setCleanData()
+                appViewModel.cleanData()
                 Log.d("DATAOBJECT VEWMODEL", "${appViewModel.cleanData}")
             }
         }
