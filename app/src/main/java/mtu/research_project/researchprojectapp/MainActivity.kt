@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 AddSubScreen(appViewModel = appViewModel, navHostController = navController)
             }
             composable(route = Screens.DataScreen.route){
-                DataScreen(appViewModel = appViewModel)
+                DataScreen(appViewModel = appViewModel, navController = navController)
             }
         }
     }

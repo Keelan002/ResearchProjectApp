@@ -35,7 +35,7 @@ fun EditExistingImage(
                 is CropError -> error = result
                 is CropResult.Success -> {
 
-                    val newImage = CategoryImage(result.bitmap.asAndroidBitmap(), "")
+                    val newImage = CategoryImage(result.bitmap.asAndroidBitmap(), "", null)
 
                     appViewModel.replacePhotoInCategory(
                         oldImage = selectedImage,

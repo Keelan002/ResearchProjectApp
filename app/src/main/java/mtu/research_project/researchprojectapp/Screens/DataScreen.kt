@@ -1,25 +1,36 @@
 package mtu.research_project.researchprojectapp.Screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import mtu.research_project.researchprojectapp.AppModel.LabelData
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
 @Composable
-fun DataScreen(appViewModel: AppViewModel){
+fun DataScreen(appViewModel: AppViewModel, navController: NavController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,30 +45,52 @@ fun DataScreenContent(appViewModel: AppViewModel) {
 
     Column (
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
     ){
 
-        Text(
-            text = "Scanned data for ${appViewModel.selectedImage?.imageTitle}",
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center,
-            color = Color.White
-        )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+        ){
+            Button(
+                onClick = {
+                    Log.d("IS CLICKED", "TRUE")
+                    appViewModel.setLabelData(appViewModel.setData)
+                    Log.d("SELECTED IMAGE LABEL DATA",
+                        appViewModel.selectedImage?.labelData.toString()
+                    )
+                },
 
-        DisplayData(appViewModel = appViewModel)
+            ) {
+                Text(
+                    text = "Another Destination",
+                    color = Color.White
+                )
+            }
+
+            Text(
+                text = "Scanned data for ${appViewModel.selectedImage?.imageTitle}",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+        }
+
+
+       appViewModel.setData = DisplayData(appViewModel = appViewModel)
+
+
     }
 }
 
 @Composable
-fun DisplayData(appViewModel: AppViewModel){
+fun DisplayData(appViewModel: AppViewModel): LabelData?{
     val cleanData = appViewModel.cleanData
+    val keysList = cleanData?.keys?.toMutableList()
+    val valuesList = cleanData?.values?.toMutableList()
 
     // Check if cleanData is not null
     if (cleanData != null) {
-        // Convert keys and values to lists
-        val keysList = cleanData.keys?.toList()
-        val valuesList = cleanData.values?.toList()
-
         // Check if keysList is not null
         if (keysList != null) {
             // Column with vertical scrolling
@@ -69,26 +102,36 @@ fun DisplayData(appViewModel: AppViewModel){
             ) {
                 // Iterate over the indices of the lists
                 for (i in keysList.indices) {
+
+                    var keyData by rememberSaveable { mutableStateOf(keysList[i]) }
+                    var valuesData by rememberSaveable { mutableStateOf(valuesList?.get(i) ?: "") }
+
                     // Create a Row for each key-value pair
                     Row {
                         // TextField for the key
                         TextField(
-                            value = keysList[i], // Display the key
-                            onValueChange = { /* No action for now */ },
+                            value = keyData,
+                            onValueChange = {
+                                keyData = it
+                                keysList[i] = keyData
+                                Log.d("KEYSLIST", "$keysList")
+                                Log.d("SETDATA", "${appViewModel.setData}")
+                            },
                             modifier = Modifier
                                 .padding(10.dp)
                                 .weight(1f), // Occupy half of the available space
-                            readOnly = true // Make the TextField read-only
                         )
 
                         // TextField for the value
                         TextField(
-                            value = "${valuesList?.get(i)}", // Display the value
-                            onValueChange = { /* No action for now */ },
+                            value = valuesData, // Display the value
+                            onValueChange = {
+                                valuesData = it
+                                valuesList?.set(i, valuesData)
+                            },
                             modifier = Modifier
                                 .padding(10.dp)
                                 .weight(1f), // Occupy half of the available space
-                            readOnly = true // Make the TextField read-only
                         )
                     }
                 }
@@ -102,4 +145,13 @@ fun DisplayData(appViewModel: AppViewModel){
             modifier = Modifier.padding(16.dp)
         )
     }
+    val newLabelData = appViewModel.selectedImage?.imageTitle?.let {
+        LabelData(
+        labelDataName = it,
+        keys = keysList,
+        values = valuesList
+        )
+    }
+    return newLabelData
 }
+

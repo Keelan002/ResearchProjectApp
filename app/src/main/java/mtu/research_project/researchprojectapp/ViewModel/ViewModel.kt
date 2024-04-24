@@ -107,6 +107,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     var cleanData: LabelData? = null
 
+    var setData: LabelData? = null
+
+    fun setLabelData(labelData: LabelData?){
+        selectedImage?.labelData = labelData
+    }
+
     fun setDataObject() {
         dataObject = hitApi()
     }
@@ -176,7 +182,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addPhotoToCategory(bitmap: Bitmap, title: String) {
 
-        val imageToAdd = CategoryImage(bitmap, title)
+        val imageToAdd = CategoryImage(bitmap, title, null)
         val category = currentSelectedCategory.value
         if (category != null) {
             category.photos?.add(imageToAdd)
