@@ -10,6 +10,13 @@ import com.google.accompanist.permissions.rememberPermissionState
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
+/**
+ * content of the check permission screen
+ *
+ * @param cameraViewModel camera viewmodel
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CheckPermissionScreen(cameraViewModel: CameraViewModel, appViewModel: AppViewModel, navController: NavHostController) {
@@ -25,6 +32,15 @@ fun CheckPermissionScreen(cameraViewModel: CameraViewModel, appViewModel: AppVie
     )
 }
 
+/**
+ * used to check if app has permission to use the camera
+ *
+ * @param hasPermission bool to see if app has permission
+ * @param onRequestPermission lambda for functionality on request
+ * @param cameraViewModel camera viewmodel
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ */
 @Composable
 private fun MainContent(
     hasPermission: Boolean,

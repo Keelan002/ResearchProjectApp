@@ -1,5 +1,8 @@
 package mtu.research_project.researchprojectapp.Screens
 
+/**
+ * all screens in application
+ */
 sealed class Screens (val route: String){
     object CaptureScreen: Screens("capture_screen")
     object CameraScreen: Screens("camera_screen")

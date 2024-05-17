@@ -30,7 +30,14 @@ import androidx.compose.ui.unit.sp
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
-
+/**
+ * a custom texttfield to be used across the application
+ *
+ * @param value the typed text
+ * @param onValueChange lambda param
+ * @param placeholder the placeholder text
+ * @param icon icon to be displayed
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTextField(
@@ -76,6 +83,13 @@ fun CustomTextField(
     )
 }
 
+/**
+ *  used to display categories
+ *
+ *  @param text name of category
+ *  @param onClick lambda for click function
+ *  @param fileCount number of items within
+ */
 @Composable
 fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier, fileCount: Int){
 
@@ -114,8 +128,12 @@ fun CategoryBox(text: String, onClick: () -> Unit, modifier: Modifier, fileCount
 }
 
 
-
-
+/**
+ * Btns to be used on image preview screen
+ *
+ * @param onClick lambda from click function
+ * @param text the buttons text
+ */
 @Composable
 fun PreviewImageBtns(onClick: () -> Unit, text: String){
     Button(
@@ -135,6 +153,15 @@ fun PreviewImageBtns(onClick: () -> Unit, text: String){
     }
 }
 
+/**
+ * a custom text field to be used for the filtered text field
+ *
+ * @param value the typed text
+ * @param onValueChange lambda param
+ * @param placeholder the placeholder text
+ * @param icon icon to be displayed
+ * @param appViewModel the apps viewmodel
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilteredCustomTextField(

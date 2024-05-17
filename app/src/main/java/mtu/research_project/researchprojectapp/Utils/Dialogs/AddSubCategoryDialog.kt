@@ -27,6 +27,12 @@ import mtu.research_project.researchprojectapp.AppModel.Category
 import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
+/**
+ * this is used to display a dialog when adding a new subcategory
+ *
+ * @param onDismiss lambda param to hide the dialog
+ * @param onAddCategory lambda param to add the category
+ */
 @Composable
 fun AddSubCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit, appViewModel: AppViewModel) {
     var subCategoryName by rememberSaveable { mutableStateOf("") }

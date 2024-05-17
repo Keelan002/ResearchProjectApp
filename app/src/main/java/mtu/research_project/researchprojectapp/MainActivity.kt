@@ -19,21 +19,30 @@ import mtu.research_project.researchprojectapp.Screens.CaptureScreen
 import mtu.research_project.researchprojectapp.Screens.CheckPermissionScreen
 import mtu.research_project.researchprojectapp.Screens.DataScreen
 import mtu.research_project.researchprojectapp.Screens.ImageEditorScreen
-import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreeContent
 import mtu.research_project.researchprojectapp.Screens.ImagePreviewScreen
 import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.scope.ScopeID
 
+/**
+ * Main activity for the application.
+ * Initializes view models and sets the content view with Compose.
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appViewModel: AppViewModel
     private val cameraViewModel: CameraViewModel by viewModel()
 
 
+    /**
+     * Called when the activity is starting.
+     * Initializes the app and camera view models, and sets the content view.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     * this Bundle contains the data it most recently supplied in [onSaveInstanceState]. Otherwise, it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appViewModel = ViewModelProvider(this).get(AppViewModel::class.java)
@@ -41,13 +50,18 @@ class MainActivity : AppCompatActivity() {
             Surface(
                 modifier = Modifier.fillMaxSize(),
             ) {
-                DemoApp(cameraViewModel)
+                App(cameraViewModel)
             }
         }
     }
 
+    /**
+     * Composable function that sets up the application UI.
+     *
+     * @param cameraViewModel The view model for camera functionality.
+     */
     @Composable
-    fun DemoApp(cameraViewModel: CameraViewModel) {
+    fun App(cameraViewModel: CameraViewModel) {
         val navController = rememberNavController()
         Scaffold { innerPadding ->
             NavHost(
@@ -59,6 +73,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Composable function that sets up the navigation host.
+     *
+     * @param navController The navigation controller.
+     * @param modifier The modifier to be applied to the composable.
+     * @param cameraViewModel The view model for camera functionality.
+     * @param appViewModel The view model for the application.
+     */
     @Composable
     fun NavHost(
         navController: NavHostController,

@@ -27,6 +27,12 @@ import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import mtu.research_project.researchprojectapp.AppModel.Category
 
 
+/**
+ * this is used to display a dialog when adding a new category
+ *
+ * @param onDismiss lambda param to hide the dialog
+ * @param onAddCategory lambda param to add the category
+ */
 @Composable
 fun AddCategoryDialog(onDismiss: () -> Unit, onAddCategory: (Category) -> Unit) {
     var categoryName by rememberSaveable { mutableStateOf("") }

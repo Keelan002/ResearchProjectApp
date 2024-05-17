@@ -9,6 +9,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
+/**
+ * Screen to display the addSubCategory dialog
+ *
+ * @param appViewModel the apps viewmodel
+ * @param navHostController used for navigation
+ */
 @Composable
 fun AddSubScreen(appViewModel: AppViewModel, navHostController: NavHostController){
     Column(

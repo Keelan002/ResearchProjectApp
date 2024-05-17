@@ -29,6 +29,12 @@ import androidx.navigation.NavController
 import mtu.research_project.researchprojectapp.AppModel.LabelData
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 
+/**
+ * set up of data screen
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ */
 @Composable
 fun DataScreen(appViewModel: AppViewModel, navController: NavController){
     Column(
@@ -40,6 +46,11 @@ fun DataScreen(appViewModel: AppViewModel, navController: NavController){
     }
 }
 
+/**
+ * data screen content where extracted label data is displayed
+ *
+ * @param appViewModel apps viewmodel
+ */
 @Composable
 fun DataScreenContent(appViewModel: AppViewModel) {
 
@@ -56,9 +67,9 @@ fun DataScreenContent(appViewModel: AppViewModel) {
                 onClick = {
                     Log.d("IS CLICKED", "TRUE")
                     appViewModel.setLabelData(appViewModel.setData)
-                    Log.d("SELECTED IMAGE LABEL DATA",
+                    /*Log.d("SELECTED IMAGE LABEL DATA",
                         appViewModel.selectedImage?.labelData.toString()
-                    )
+                    )*/
                 },
 
             ) {
@@ -83,6 +94,12 @@ fun DataScreenContent(appViewModel: AppViewModel) {
     }
 }
 
+/**
+ * used to format the display of the label data
+ *
+ * @param appViewModel apps viewmodel
+ * @return the label data
+ */
 @Composable
 fun DisplayData(appViewModel: AppViewModel): LabelData?{
     val cleanData = appViewModel.cleanData

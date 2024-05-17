@@ -43,6 +43,14 @@ import mtu.research_project.researchprojectapp.Utils.PreviewImageBtns
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
+
+/**
+ * set up of image preview screen
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ * @param cameraViewModel camera viewmodel
+ */
 @Composable
 fun ImagePreviewScreen(appViewModel: AppViewModel, cameraViewModel: CameraViewModel, navHController: NavHostController){
     Column (
@@ -57,6 +65,13 @@ fun ImagePreviewScreen(appViewModel: AppViewModel, cameraViewModel: CameraViewMo
     }
 }
 
+/**
+ * displays one of two functions dependant on view new or existing image
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ * @param cameraViewModel camera viewmodel
+ */
 @Composable
 fun ImagePreviewScreeContent(
     appViewModel: AppViewModel,
@@ -132,7 +147,15 @@ fun ImagePreviewScreeContent(
 }
 
 
-
+/**
+ * function to preview a new photo
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ * @param cameraViewModel camera viewmodel
+ * @param lastCapturedImage the most recent cpatured image
+ * @param imageTitle image title
+ */
 @Composable
 fun PreviewNewPhoto(
     appViewModel: AppViewModel,
@@ -197,6 +220,14 @@ fun PreviewNewPhoto(
     }
 }
 
+/**
+ * used to preview an existing photo
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ * @param selectedImage the selectd image
+ * @param imageTitle image title
+ */
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun PreviewExistingPhoto(
@@ -259,6 +290,11 @@ fun PreviewExistingPhoto(
     }
 }
 
+/**
+ * used to scale image on screen
+ *
+ * @return the scale as float
+ */
 @Composable
 private fun getImageScaleConstraints(): Float {
 
@@ -270,6 +306,13 @@ private fun getImageScaleConstraints(): Float {
     return if (scale < 1) scale else 1f
 }
 
+/**
+ * used to hit the api with the viewed image
+ *
+ * @param appViewModel apps viewmodel
+ * @param navController for navigation
+ *
+ */
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun ScanButton(navController: NavController, appViewModel: AppViewModel) {
@@ -292,6 +335,9 @@ fun ScanButton(navController: NavController, appViewModel: AppViewModel) {
     }
 }
 
+/**
+ * used to delay the navigation to the data screen before data is recieved from api
+ */
 private suspend fun checkDataAndNavigate(navController: NavController, appViewModel: AppViewModel) {
     while (true) {
         delay(1000) // Check every 1 second

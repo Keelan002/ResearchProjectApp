@@ -3,6 +3,13 @@ package mtu.research_project.researchprojectapp.Utils
 import android.graphics.Bitmap
 import android.graphics.Matrix
 
+/**
+ * used to rotate the image
+ *
+ * @param rotationDegrees the degree of rotation
+ *
+ * @return the new bitmap
+ */
 fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
     val matrix = Matrix().apply {
         postRotate(-rotationDegrees.toFloat())

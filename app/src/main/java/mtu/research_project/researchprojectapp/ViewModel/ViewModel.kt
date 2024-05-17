@@ -132,6 +132,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val filteredPhotos: LiveData<List<CategoryImage>> get() = _filteredPhotos
 
 
+    /**
+     * updates the search query value
+     * @param query which is recieved from a text field
+     */
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
         val lowercaseQuery = query.lowercase().trim()
@@ -145,41 +149,76 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * this adds a category to the navigation stack used for navigation
+     * @param any given category
+     */
     fun addCatgeoryToNavStack(category: Category) {
         _categoryNavigationStack.value += category
     }
 
+    /**
+     * this removes the category at the top of the nav stack used for navigation
+     */
     fun removeLastCategory() {
         if (_categoryNavigationStack.value.isNotEmpty()) {
             _categoryNavigationStack.value = _categoryNavigationStack.value.dropLast(1)
         }
     }
 
+    /**
+     * gets the category at the top of the navigation stack used for navigation
+     */
     fun getLastCategory(): Category? {
         return categoryNavigationStack.lastOrNull()
     }
 
+    /**
+     * to set the title of any given image
+     * @param image selected image
+     * @param newTitle new title
+     * @return a category image object
+     */
     fun setCategoryImageName(image: CategoryImage, newTitle: String): CategoryImage {
         return image.copy(imageTitle = newTitle)
     }
 
+    /**
+     * this updates the state of the isViewingSub bool used to determine if viewing subfiles
+     */
     fun updateIsViewingSubBool(newValue: Boolean){
         _isViewingSub.value = newValue
     }
 
+    /**
+     * used to update isEditingExistingPhoto bool
+     * used to determine if we are viewing an existing photo
+     */
     fun updateIsEditingExistingPhotoBool(newValue: Boolean) {
         _isEditingExistingPhoto.value = newValue
     }
 
+    /**
+     * used to set the currentSelectedCategory value
+     * @param category a category object
+     */
     fun setSelectedCategory(category: Category?) {
         _currentSelectedCategory.value = category
     }
 
-
+    /**
+     * adds a top level category to the list value
+     * @param category a given category
+     */
     private fun createCategory(category: Category) {
         _topLvlCategories.value = _topLvlCategories.value + category
     }
 
+    /**
+     * adds a given photo to a category
+     * @param bitmap the given images bitmap
+     * @param title the title of the given photo
+     */
     fun addPhotoToCategory(bitmap: Bitmap, title: String) {
 
         val imageToAdd = CategoryImage(bitmap, title, null)
@@ -190,6 +229,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         addPhotoToAllPhoto(imageToAdd)
     }
 
+    /**
+     * adds a sub category to a category onject
+     * @param subCategory a subcategory object
+     */
     private fun addSubCategoryToCategory(subCategory: Category){
         val category = currentSelectedCategory.value
 
@@ -198,6 +241,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * used to replace a photot in a specific category
+     *
+     * @param oldImage the image to be replaced
+     * @param newImage the image to replace the old
+     */
     fun replacePhotoInCategory(oldImage: CategoryImage, newImage: CategoryImage) {
         val category = currentSelectedCategory.value
         if (category != null) {
@@ -211,6 +260,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * used to delete a photo from a category based on title
+     *
+     * @param imageTitle the image title
+     */
     fun deletePhotoByTitle(imageTitle: String) {
         val selectedCategory = currentSelectedCategory.value ?: return
 
@@ -223,6 +277,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * used to filter items into a list based on search query
+     *
+     * @param allItems a list of all items
+     * @param filteredItems a list for the filtered items
+     */
     private fun <T> updateFilteredItems(allItems: List<T>, filteredItems: MutableLiveData<List<T>>, predicate: (T) -> Boolean) {
         val lowercaseQuery = _searchQuery.value?.lowercase()?.trim()
         if (lowercaseQuery != null) {
@@ -234,6 +294,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * used to add a categories to a list regardless of state
+     *
+     * @param categories all categories list
+     */
     private fun addAllCategories(categories: List<Category>) {
         val allCategoriesList = mutableListOf<Category>()
         categories.forEach { category ->
@@ -245,10 +310,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _allCategories.value = allCategoriesList
     }
 
+    /**
+     * used to store all photos
+     *
+     * @param image any givne image
+     */
     private fun addPhotoToAllPhoto(image: CategoryImage) {
         _allPhotos.value = _allPhotos.value + image
     }
 
+    /**
+     * converts an image form uri to bitmap
+     *
+     * @param context the local context
+     * @param uri the image uri
+     *
+     * @return the bitmap of the image
+     */
     fun loadImageFromUriAsBitmap(context: Context, uri: Uri): Bitmap? {
         return try {
             val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
@@ -260,22 +338,30 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * updates the uiState to display a dialog
+     */
     fun showAddCategoryDialog() {
         uiState = uiState.copy(showAddCategoryDialog  = true)
     }
 
+    /**
+     * updates uiState to hide dialog
+     */
     fun hideAddCategoryDialog() {
         uiState = uiState.copy(showAddCategoryDialog = false)
     }
 
-    fun showAddSubCategoryDialog(){
-        uiState = uiState.copy(showAddSubCategoryDialog = true)
-    }
-
+    /**
+     * updates uiState to hide dialog
+     */
     fun hideAddSubCategoryDialog(){
         uiState = uiState.copy(showAddSubCategoryDialog = false)
     }
 
+    /**
+     * used to display a dialog based on uiState
+     */
     @Composable
     fun RunAddCategoryDialog(){
         if (uiState.showAddCategoryDialog){
@@ -290,6 +376,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * used to display a dialog based on uiState
+     */
     @Composable
     fun RunAddSubCategoryDialog(navHostController: NavHostController) {
         AddSubCategoryDialog(
@@ -305,6 +394,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
+    /**
+     * displays the image cropper dialog
+     */
     @Composable
     fun RunImageCropperDialog(
         cropState: CropState?,
@@ -315,6 +407,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+    /**
+     * used to count the ammount of items in a given category
+     *
+     * @param category a given category
+     *
+     * @return the number of items within
+     */
     fun countSubCategoriesAndImages(category: Category): Int {
         var count = 0
 
@@ -329,12 +428,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return count
     }
 
+    /**
+     * converts bitmap to JPEG
+     *
+     * @param bitmap a given bitmap
+     * @param outputFile the bitmnap as jpeg
+     */
     private fun saveBitmapToFile(bitmap: Bitmap, outputFile: File) {
         FileOutputStream(outputFile).use { fos ->
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
         }
     }
 
+    /**
+     * creates connection for http client
+     *
+     * @return the created client
+     */
     private fun createOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS) // Increase connect timeout to 30 seconds
@@ -343,6 +453,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             .build()
     }
 
+    /**
+     * used to upload an image to the api
+     *
+     * @param bitmap a given bitmap
+     * @param context the local context
+     *
+     * @return the clinets respone
+     */
     private fun uploadImage(bitmap: Bitmap, context: Context): Response {
         val client = createOkHttpClient()
 
@@ -366,7 +484,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
+    /**
+     * used to interact with the OCR Api
+     *
+     * @return the extracted text from the nutritional label
+     */
     fun hitApi(): LabelData? {
         val response = selectedImage?.image?.let { uploadImage(it, getApplication()) }
         response?.let {
@@ -414,6 +536,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
+    /**
+     * used to clean the data recieved from the api
+     *
+     * @param labelData the data recieved from the api
+     *
+     * @return the cleaned data
+     */
     fun cleanUpData(labelData: LabelData?): LabelData? {
         labelData?.let { data ->
             val cleanedKeys = mutableListOf<String>()
@@ -442,11 +571,5 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
-    fun exportToCSV(cleanedData: String, fileName: String) {
-        val csvFile = File(fileName)
-        Log.d("FILE PATH", csvFile.absolutePath)
-        csvFile.writeText(cleanedData)
-        Log.d("CSV EXPORTED", "SUCCESS")
-    }
 }
 

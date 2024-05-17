@@ -19,6 +19,13 @@ import mtu.research_project.researchprojectapp.Screens.Screens
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
+/**
+ * this is used to to launch the image cropper for an existing image
+ *
+ * @param selectedImage a gievn image
+ * @param appViewModel the apps viewmodel
+ * @param navController used for navigation
+ */
 @Composable
 fun EditExistingImage(
     selectedImage: CategoryImage?,
@@ -55,6 +62,14 @@ fun EditExistingImage(
     )
 }
 
+/**
+ * this is used to to launch the image cropper for a new image
+ *
+ * @param selectedImage a gievn image
+ * @param appViewModel the apps viewmodel
+ * @param cameraViewModel viewmodel associated with the camera
+ * @param navController used for navigation
+ */
 @Composable
 fun EditTakenPhoto(
     selectedImage: ImageBitmap?,

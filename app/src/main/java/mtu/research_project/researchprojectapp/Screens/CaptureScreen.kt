@@ -67,7 +67,13 @@ import mtu.research_project.researchprojectapp.Utils.FilteredCustomTextField
 import mtu.research_project.researchprojectapp.ViewModel.AppViewModel
 import mtu.research_project.researchprojectapp.ViewModel.CameraViewModel
 
-
+/**
+ * set up of capture screen
+ *
+ * @param navController for navigation
+ * @param appViewModel apps viewmodel
+ * @param cameraViewModel camera viewmodel
+ */
 @Composable
 fun CaptureScreen(
     navController: NavHostController,
@@ -84,6 +90,13 @@ fun CaptureScreen(
     appViewModel.RunAddCategoryDialog()
 }
 
+/**
+ * the content of the capture screen
+ *
+ * @param navHController for navigation
+ * @param appViewModel apps viewmodel
+ * @param cameraViewModel camera viewmodel
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -235,7 +248,11 @@ fun CaptureScreenContent(
     )
 }
 
-
+/**
+ * used to display top-level categories on screnn
+ *
+ * @param appViewModel apps viewmodel
+ */
 @Composable
 fun DisplayCategories(appViewModel: AppViewModel) {
     LazyVerticalGrid(
@@ -263,6 +280,12 @@ fun DisplayCategories(appViewModel: AppViewModel) {
     }
 }
 
+/**
+ * used to display subcategories and images on the screen based on selected category
+ *
+ * @param appViewModel apps viewmodel
+ * @param navHController for navigation
+ */
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun DisplaySubCategoriesAndImages(
@@ -322,7 +345,11 @@ fun DisplaySubCategoriesAndImages(
     }
 }
 
-
+/**
+ * displays categories based on the search query
+ *
+ * @param appViewModel apps viewmodel
+ */
 @Composable
 fun DisplayFilteredCategories(appViewModel: AppViewModel) {
 
@@ -377,9 +404,14 @@ fun DisplayFilteredCategories(appViewModel: AppViewModel) {
 }
 
 
-
-
-
+/**
+ * used to launch the activity which allows a user to select a photo from the devices gallery
+ *
+ * @param context the local context
+ * @param appViewModel apps viewmodel
+ * @param navHController for navigation
+ * @param cameraViewModel camera viewmodel
+ */
 @Composable
 fun PickImageFromGallery(
     context: Context,
@@ -421,6 +453,12 @@ fun PickImageFromGallery(
     }
 }
 
+/**
+ * button used to navigate to the camera screen
+ *
+ * @param appViewModel apps viewmodel
+ * @param navHController for navigation
+ */
 @Composable
 fun CapturePhotoBtn(appViewModel: AppViewModel, navHController: NavHostController){
     FloatingActionButton(

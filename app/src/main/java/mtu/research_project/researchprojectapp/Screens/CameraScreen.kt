@@ -58,6 +58,13 @@ import mtu.research_project.researchprojectapp.Theme.secondaryColor
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * set up of camera screen
+ *
+ * @param viewModel camera viewModel
+ * @param appViewModel apps viewmodel
+ * @param navController used for navigation
+ */
 @Composable
 fun CameraScreen(
     viewModel: CameraViewModel = koinViewModel(),
@@ -75,6 +82,13 @@ fun CameraScreen(
     )
 }
 
+/**
+ * display the live camera feed and calls capture photo fun
+ *
+ * @param appViewModel apps viewmodel
+ * @param cameraViewModel camera viewmodel
+ * @param navController for navigation
+ */
 @Composable
 private fun CameraContent(
     lastCapturedPhoto: Bitmap? = null,
@@ -152,7 +166,13 @@ private fun CameraContent(
     }
 }
 
-
+/**
+ * used to capture and store the photo
+ *
+ * @param cameraController the camera controller
+ * @param context the local context
+ * @param cameraViewModel camera viewmodel
+ */
 private fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController,
